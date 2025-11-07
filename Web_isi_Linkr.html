@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linkr - Bio Anda</title>
+    <!-- Memuat Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Memuat font Inter -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <style>
+        /* Menerapkan font Inter sebagai default */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Efek transisi halus untuk tombol tautan */
+        .link-button {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .link-button:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* CSS Kustom untuk Teks Gradien Animasi */
+        .animated-gradient-text {
+            /* Terapkan gradien warna */
+            background: linear-gradient(to right, #ec4899, #8b5cf6, #3b82f6, #ec4899);
+            /* Set ukuran background lebih besar untuk animasi */
+            background-size: 200% auto;
+            /* Klip background ke teks */
+            -webkit-background-clip: text;
+            background-clip: text;
+            /* Buat teks transparan */
+            -webkit-text-fill-color: transparent;
+            /* Terapkan animasi */
+            animation: gradient-flow 4s linear infinite;
+        }
+
+        @keyframes gradient-flow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen flex items-center justify-center p-4">
+
+    <main class="w-full max-w-md mx-auto">
+        <!-- Kontainer Utama -->
+        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 md:p-8">
+            
+            <!-- Header Profil -->
+            <header class="text-center mb-6">
+                <!-- Gambar Profil Dihapus -->
+                
+                <!-- Nama dan Handle Dihapus -->
+                
+                <!-- Deskripsi Singkat Dihapus -->
+                <h1 class="text-3xl md:text-4xl font-bold animated-gradient-text">
+                    Kumpulan Kata-Kata Bucin
+                </h1>
+                
+            </header>
+
+            <!-- Daftar Tautan -->
+            <section class="space-y-4">
+                
+                <!-- Tautan 1 -->
+                <a href="https://zyannnnn123.github.io/Nothing/Praktek" target="_blank" rel="noopener noreferrer"
+                   class="link-button flex items-center justify-center w-full bg-indigo-600 text-white font-semibold p-4 rounded-lg shadow-md hover:bg-indigo-700">
+                    <span class="text-center">kata-kata untuk pasangan sedang belajar</span>
+                </a>
+                
+                <!-- Tautan 2 -->
+                <a href="https://zyannnnn123.github.io/untuk_ayang/" target="_blank" rel="noopener noreferrer"
+                   class="link-button flex items-center justify-center w-full bg-blue-500 text-white font-semibold p-4 rounded-lg shadow-md hover:bg-blue-600">
+                    <span class="text-center">Semangat untuk Pasangan</span>
+                </a>
+                
+                <!-- Tautan 3 -->
+                <a href="https://zyannnnn123.github.io/untuk_ayang/karenakamu.html" target="_blank" rel="noopener noreferrer"
+                   class="link-button flex items-center justify-center w-full bg-teal-500 text-white font-semibold p-4 rounded-lg shadow-md hover:bg-teal-600">
+                    <span class="text-center">Karena Kamu Cantik</span>
+                </a>
+                
+                <!-- Tautan 4 -->
+                <!-- Ini adalah bagian yang akan dihapus -->
+
+            </section>
+            
+            <!-- Ikon Sosial Media -->
+            <footer class="mt-8">
+                <!-- Konten footer (ikon sosial media) dihapus -->
+            </footer>
+        </div>
+    </main>
+
+</body>
+</html>
