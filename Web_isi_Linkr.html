@@ -18,7 +18,7 @@
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
         .link-button:hover {
-            transform: scale(1.03);
+            transform: scale(1.05); /* Diperbesar saat di-hover (sedikit lebih besar dari animasi) */
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
@@ -33,8 +33,8 @@
             background-clip: text;
             /* Buat teks transparan */
             -webkit-text-fill-color: transparent;
-            /* Terapkan animasi */
-            animation: gradient-flow 4s linear infinite;
+            /* Terapkan animasi - DIHAPUS DARI SINI, dipindah ke .animated-header-walk */
+            /* animation: gradient-flow 4s linear infinite; */
         }
 
         @keyframes gradient-flow {
@@ -46,6 +46,59 @@
             }
             100% {
                 background-position: 0% 50%;
+            }
+        }
+
+        /* Animasi "berjalan" untuk Subteks "Created Zyann" (PERBAIKAN) */
+        .animated-subtext {
+            display: inline-block;
+            animation: walk-subtext 3s ease-in-out infinite;
+        }
+
+        @keyframes walk-subtext {
+            0%, 100% {
+                transform: translateX(-15px);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translateX(15px);
+                opacity: 1;
+                text-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+            }
+        }
+
+        /* Animasi "berjalan" untuk Header H1 (BARU) */
+        .animated-header-walk {
+             display: inline-block; /* Diperlukan untuk transform */
+             /* Gabungkan animasi gradient-flow YANG SUDAH ADA dengan animasi walk-header BARU */
+             animation: gradient-flow 4s linear infinite, walk-header 5s ease-in-out infinite; 
+        }
+
+        @keyframes walk-header {
+             0%, 100% {
+                transform: translateX(-10px); /* Bergerak sedikit lebih lambat/pendek dari subteks */
+             }
+             50% {
+                transform: translateX(10px);
+             }
+        }
+
+
+        /* Animasi "bernapas" untuk tombol DIHAPUS */
+        /* .animated-button-breathe { ... } */
+        /* @keyframes breathe { ... } */
+
+        /* Animasi "mengambang" (float) BARU untuk tombol */
+        .animated-button-float {
+            animation: float-button 3s ease-in-out infinite;
+        }
+
+        @keyframes float-button {
+            0%, 100% {
+                transform: translateY(0); /* Posisi awal */
+            }
+            50% {
+                transform: translateY(-8px); /* Mengambang ke atas 8px */
             }
         }
     </style>
@@ -63,9 +116,14 @@
                 <!-- Nama dan Handle Dihapus -->
                 
                 <!-- Deskripsi Singkat Dihapus -->
-                <h1 class="text-3xl md:text-4xl font-bold animated-gradient-text">
+                <h1 class="text-3xl md:text-4xl font-bold animated-gradient-text animated-header-walk">
                     Kumpulan Kata-Kata Bucin
                 </h1>
+                
+                <!-- Teks 'Created Zyann' ditambahkan di sini dengan animasi -->
+                <p class="text-sm text-gray-600 mt-2 animated-subtext">
+                    Created Zyann
+                </p>
                 
             </header>
 
@@ -74,24 +132,45 @@
                 
                 <!-- Tautan 1 -->
                 <a href="https://zyannnnn123.github.io/Nothing/Praktek" target="_blank" rel="noopener noreferrer"
-                   class="link-button flex items-center justify-center w-full bg-indigo-600 text-white font-semibold p-4 rounded-lg shadow-md hover:bg-indigo-700">
+                   class="link-button animated-button-float flex items-center justify-center w-full bg-indigo-600 text-white font-semibold p-4 rounded-lg shadow-md hover:bg-indigo-700">
                     <span class="text-center">kata-kata untuk pasangan sedang belajar dan Praktek</span>
                 </a>
                 
                 <!-- Tautan 2 -->
                 <a href="https://zyannnnn123.github.io/untuk_ayang/" target="_blank" rel="noopener noreferrer"
-                   class="link-button flex items-center justify-center w-full bg-blue-500 text-white font-semibold p-4 rounded-lg shadow-md hover:bg-blue-600">
+                   class="link-button animated-button-float flex items-center justify-center w-full bg-blue-500 text-white font-semibold p-4 rounded-lg shadow-md hover:bg-blue-600">
                     <span class="text-center">Semangat untuk Pasangan</span>
                 </a>
                 
                 <!-- Tautan 3 -->
                 <a href="https://zyannnnn123.github.io/untuk_ayang/karenakamu.html" target="_blank" rel="noopener noreferrer"
-                   class="link-button flex items-center justify-center w-full bg-teal-500 text-white font-semibold p-4 rounded-lg shadow-md hover:bg-teal-600">
+                   class="link-button animated-button-float flex items-center justify-center w-full bg-teal-500 text-white font-semibold p-4 rounded-lg shadow-md hover:bg-teal-600">
                     <span class="text-center">Karena Kamu Cantik</span>
                 </a>
                 
-                <!-- Tautan 4 -->
-                <!-- Ini adalah bagian yang akan dihapus -->
+                <!-- Tautan 4 (Baru ditambahkan) -->
+                <a href="https://zyannnnn123.github.io/Nothing/tembakgebetan" target="_blank" rel="noopener noreferrer"
+                   class="link-button animated-button-float flex items-center justify-center w-full bg-pink-500 text-white font-semibold p-4 rounded-lg shadow-md hover:bg-pink-600">
+                    <span class="text-center">Tembak Gebetan</span>
+                </a>
+
+                <!-- Tautan 5 (Baru ditambahkan) -->
+                <a href="https://zyannnnn123.github.io/Nothing/mintapap" target="_blank" rel="noopener noreferrer"
+                   class="link-button animated-button-float flex items-center justify-center w-full bg-purple-500 text-white font-semibold p-4 rounded-lg shadow-md hover:bg-purple-600">
+                    <span class="text-center">Minta PaP</span>
+                </a>
+
+                <!-- Tautan 6 (Baru ditambahkan) -->
+                <a href="https://zyannnnn123.github.io/Nothing/sayangakugak" target="_blank" rel="noopener noreferrer"
+                   class="link-button animated-button-float flex items-center justify-center w-full bg-cyan-500 text-white font-semibold p-4 rounded-lg shadow-md hover:bg-cyan-600">
+                    <span class="text-center">Sayang Aku Gak</span>
+                </a>
+
+                <!-- Tautan 7 (Baru ditambahkan) -->
+                <a href="https://zyannnnn123.github.io/Nothing/minta_maaf_ke_ayang" target="_blank" rel="noopener noreferrer"
+                   class="link-button animated-button-float flex items-center justify-center w-full bg-emerald-500 text-white font-semibold p-4 rounded-lg shadow-md hover:bg-emerald-600">
+                    <span class="text-center">Minta Maaaf ke Ayang</span>
+                </a>
 
             </section>
             
