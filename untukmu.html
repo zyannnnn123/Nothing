@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spesial Untukmu ❤️</title>
+    <style>
+        /* --- TAMPILAN BERSIH --- */
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace; /* Font ketik */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        #container {
+            text-align: center;
+            width: 100%;
+            max-width: 700px;
+            padding: 20px;
+        }
+
+        #foto {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #e91e63; /* Pink Gelap */
+            box-shadow: 0 0 35px rgba(233, 30, 99, 0.6);
+            margin-bottom: 30px;
+            display: none; 
+            margin-left: auto; 
+            margin-right: auto;
+            animation: putar 25s linear infinite;
+        }
+
+        #teksDisplay {
+            font-size: 26px; /* Huruf agak besar biar jelas */
+            font-weight: bold;
+            min-height: 100px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            line-height: 1.5;
+        }
+
+        #tombolMulai {
+            padding: 15px 50px;
+            background: #e91e63;
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(233, 30, 99, 0.6);
+            animation: denyut 2s infinite;
+            transition: transform 0.2s;
+        }
+        
+        #tombolMulai:active { transform: scale(0.95); }
+
+        @keyframes denyut { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
+        @keyframes putar { 100% {transform: rotate(360deg);} }
+    </style>
+</head>
+<body>
+
+    <button id="tombolMulai" onclick="mulai()">Klik Disini Sayang ❤️</button>
+
+    <div id="container">
+        <img id="foto" src="https://i.pinimg.com/736x/f6/eb/53/f6eb535411056b553df99786aae9c81b.jpg">
+        <div id="teksDisplay"></div>
+    </div>
+
+    <audio id="lagu" src="lagu.mp3"></audio>
+
+    <script>
+        // ======================================================
+        // KONFIGURASI TEKNISI (Hanya ubah angka ini jika perlu)
+        // ======================================================
+        
+        // Berapa detik musik intro (musik kosong) sebelum lirik pertama masuk?
+        // Default lagu Reff Ari Lasso biasanya sekitar 4 - 5 detik intro.
+        const WAKTU_INTRO = 1500; // 4500 artinya 4.5 detik.
+        
+        // ======================================================
+
+        const lirik = [
+            // durasi: Berapa lama teks ini diam di layar (sesuai panjang nyanyian)
+            { teks: "Kubayangkan.............. bila engkau datang...", durasi: 6000 }, 
+            { teks: "Kupeluk bahagiakan aku 🤗", durasi: 4500 },       
+            { teks: "Kuserahkan............. seluruh hidupku ✨", durasi: 6000 },     
+            { teks: "Menjadi penjaga hatimu ❤️", durasi: 6000 },       
+            { teks: "Neng 🌹", durasi: 5000 }        
+        ];
+
+        const tombol = document.getElementById('tombolMulai');
+        const foto = document.getElementById('foto');
+        const teksDisplay = document.getElementById('teksDisplay');
+        const lagu = document.getElementById('lagu');
+
+        function mulai() {
+            tombol.style.display = 'none';
+            foto.style.display = 'block';
+
+            // Putar Audio
+            var playPromise = lagu.play();
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // Audio jalan, jalankan script
+                    jalankanScript();
+                })
+                .catch(error => {
+                    alert("Audio tidak bisa diputar. Cek nama file 'lagu.mp3'!");
+                });
+            }
+        }
+
+        async function jalankanScript() {
+            // 1. Tunggu Intro Selesai
+            await new Promise(r => setTimeout(r, WAKTU_INTRO));
+
+            // 2. Loop Lirik
+            for (let i = 0; i < lirik.length; i++) {
+                // Bersihkan layar
+                teksDisplay.innerHTML = "";
+                
+                // Ketik Teks (Efek Typewriter)
+                await ketik(lirik[i].teks);
+                
+                // Tunggu sampai baris lagu selesai dinyanyikan
+                // Kita kurangi sedikit dengan waktu mengetik agar pas
+                let waktuBaca = lirik[i].durasi - (lirik[i].teks.length * 80); 
+                if (waktuBaca < 0) waktuBaca = 0; // Safety check
+                
+                await new Promise(r => setTimeout(r, waktuBaca));
+            }
+        }
+
+        // Fungsi Mengetik
+        async function ketik(kalimat) {
+            for (let i = 0; i < kalimat.length; i++) {
+                teksDisplay.innerHTML += kalimat.charAt(i);
+                // 80ms = Kecepatan mengetik sedang
+                await new Promise(r => setTimeout(r, 80)); 
+            }
+        }
+    </script>
+</body>
+</html>
