@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    
+    <title>Kasbon RnB Network</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; margin: 0; padding-bottom: 90px; }
+        .bg-rnb { background: linear-gradient(135deg, #1d4ed8 0%, #0f172a 100%); }
+        .progress-bar { transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sheet-anim { transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sheet-anim.active { transform: translateY(0); }
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="w-full min-h-screen relative overflow-x-hidden">
+
+    <header class="bg-rnb text-white pt-8 pb-6 px-6 rounded-b-[2.5rem] shadow-xl relative z-10">
+        <div class="flex justify-between items-start mb-6">
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-2 rounded-xl shadow-lg"><i data-lucide="network" class="w-7 h-7 text-blue-700"></i></div>
+                <div>
+                    <h1 class="text-2xl font-black tracking-tighter leading-none">RnB<span class="text-blue-400">Net</span></h1>
+                    <p class="text-[10px] text-slate-300 tracking-widest uppercase mt-1 font-bold">RnB Jaya Network</p>
+                </div>
+            </div>
+            <div id="status-cloud" class="flex items-center gap-1 bg-white/20 px-2 py-1 rounded-full backdrop-blur-sm transition-all">
+                <div class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                <span class="text-[9px] font-bold uppercase tracking-wider text-white">Menghubungkan...</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-[1.5rem] shadow-lg flex justify-between items-center border-b-4 border-red-600">
+            <div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Uang Keluar</p>
+                <h2 class="text-xl font-black text-slate-800" id="stat-total-pinjaman">Rp 0</h2>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Sisa Pinjaman</p>
+                <h2 class="text-xl font-black text-red-600" id="stat-sisa">Rp 0</h2>
+            </div>
+        </div>
+    </header>
+
+    <main class="w-full p-5 mt-2">
+        <div class="flex justify-between items-end mb-4 px-1">
+            <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest" id="judul-halaman">Daftar Karyawan</h3>
+            <span class="text-[10px] font-bold text-slate-400" id="count-data">0 Data</span>
+        </div>
+        <div id="mainList" class="space-y-3">
+            </div>
+    </main>
+
+    <button id="btn-tambah-fab" onclick="bukaMenu('menuInput')" class="fixed bottom-24 right-5 w-14 h-14 bg-blue-700 text-white rounded-[1.2rem] shadow-[0_10px_25px_rgba(29,78,216,0.5)] flex items-center justify-center hover:bg-blue-800 active:scale-90 transition-all z-20 border-2 border-white">
+        <i data-lucide="plus" class="w-7 h-7"></i>
+    </button>
+
+    <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 px-4 py-3 flex justify-around items-center z-20 pb-safe">
+        <button onclick="ubahTampilan('beranda')" id="nav-beranda" class="flex flex-col items-center text-blue-700 p-2 w-20 transition-all">
+            <i data-lucide="layout-grid" class="w-6 h-6 mb-1"></i>
+            <span class="text-[10px] font-black">Beranda</span>
+        </button>
+        <button onclick="ubahTampilan('riwayat')" id="nav-riwayat" class="flex flex-col items-center text-slate-400 p-2 w-20 transition-all">
+            <i data-lucide="history" class="w-6 h-6 mb-1"></i>
+            <span class="text-[10px] font-black">Riwayat</span>
+        </button>
+        <button onclick="bukaMenu('menuData')" id="nav-data" class="flex flex-col items-center text-slate-400 p-2 w-20 transition-all">
+            <i data-lucide="database" class="w-6 h-6 mb-1"></i>
+            <span class="text-[10px] font-black">Data File</span>
+        </button>
+    </nav>
+
+    <div id="overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 hidden transition-opacity opacity-0" onclick="tutupSemuaMenu()"></div>
+
+    <div id="menuDetail" class="sheet-anim fixed inset-x-0 bottom-0 bg-white rounded-t-[2rem] z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex flex-col">
+        <div class="w-full flex justify-center py-4"><div class="w-12 h-1.5 bg-slate-200 rounded-full"></div></div>
+        <div class="px-6 pb-8">
+            <div class="flex items-center gap-4 mb-4 pb-4 border-b border-slate-100">
+                <div id="det-avatar" class="w-14 h-14 rounded-[1rem] bg-slate-900 text-white flex items-center justify-center font-black text-2xl shadow-md">A</div>
+                <div>
+                    <h2 class="text-2xl font-black text-slate-800 leading-tight" id="det-nama">Nama Teknisi</h2>
+                    <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded mt-1 inline-block" id="det-potongan">Potong: Rp 0 /bln</span>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-5 px-1 bg-slate-50 p-2 rounded-xl">
+                <div>
+                    <span class="text-[9px] font-black text-slate-400 uppercase flex items-center gap-1 mb-0.5"><i data-lucide="calendar" class="w-3 h-3 text-slate-400"></i> Tgl Pinjam</span>
+                    <span class="text-[10px] font-bold text-slate-700" id="det-tgl-pinjam">-</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-[9px] font-black text-slate-400 uppercase flex items-center justify-end gap-1 mb-0.5"><i data-lucide="clock" class="w-3 h-3 text-blue-400"></i> Angsuran Terakhir</span>
+                    <span class="text-[10px] font-bold text-blue-700" id="det-tgl-bayar">-</span>
+                </div>
+            </div>
+            
+            <div class="bg-slate-50 p-5 rounded-[1.5rem] mb-6 border border-slate-100">
+                <div class="flex justify-between items-end mb-3">
+                    <div>
+                        <span class="text-[10px] font-black text-slate-400 uppercase block">Sisa Utang</span>
+                        <span class="text-2xl font-black tracking-tighter text-red-600" id="det-sisa">Rp 0</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] font-black text-slate-400 uppercase block">Sudah Masuk</span>
+                        <span class="text-sm font-black text-slate-700" id="det-masuk">Rp 0</span>
+                    </div>
+                </div>
+                <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden mb-1.5 mt-4">
+                    <div id="det-progress-bar" class="progress-bar bg-blue-600 h-full rounded-full" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-[10px] font-black text-slate-400" id="det-total">Total: Rp 0</span>
+                    <span class="text-[10px] font-black text-blue-600" id="det-progress-text">0% Lunas</span>
+                </div>
+            </div>
+
+            <div id="det-action-area" class="flex gap-3">
+                <button onclick="tutupSemuaMenu()" class="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-bold active:scale-95 transition-all">Tutup</button>
+                
+                <button id="btn-lanjut-bayar" class="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-black shadow-lg active:scale-95 transition-all uppercase tracking-widest flex justify-center items-center gap-2">
+                    <i data-lucide="scissors" class="w-4 h-4 text-red-400"></i> BAYAR
+                </button>
+
+                <button id="btn-arsipkan" onclick="arsipkanKeRiwayat()" class="hidden flex-[2] py-4 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-2xl font-black active:scale-95 transition-all uppercase tracking-widest justify-center items-center gap-2">
+                    <i data-lucide="archive" class="w-4 h-4"></i> Masukkan Riwayat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="menuBayar" class="sheet-anim fixed inset-x-0 bottom-0 bg-white rounded-t-[2rem] z-60 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex flex-col" style="z-index: 60;">
+        <div class="w-full flex justify-center py-4"><div class="w-12 h-1.5 bg-slate-200 rounded-full"></div></div>
+        <div class="px-6 pb-8 text-center">
+            <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-md"><i data-lucide="scissors" class="w-7 h-7"></i></div>
+            <h3 class="text-2xl font-black text-slate-800" id="pay-nama-label">Nama</h3>
+            <p class="text-slate-400 text-[10px] font-black uppercase mt-1 tracking-widest">Konfirmasi Pemotongan</p>
+            <div class="my-6 p-6 bg-slate-50 rounded-[1.5rem] border-2 border-slate-100">
+                <span class="text-[10px] font-black text-slate-400 uppercase block mb-1">Potong Gaji Sebesar</span>
+                <span class="text-4xl font-black text-slate-800 tracking-tighter" id="pay-nominal">Rp 0</span>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="bukaDetail(selectedId)" class="flex-1 py-4 bg-slate-200 text-slate-600 rounded-2xl font-black active:scale-95 transition-all">Batal</button>
+                <button onclick="prosesBayarFinal()" class="flex-[2] py-4 bg-blue-700 text-white rounded-2xl font-black shadow-lg active:scale-95 transition-all uppercase tracking-widest flex justify-center items-center gap-2">
+                    <i data-lucide="check-circle" class="w-5 h-5"></i> Eksekusi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="menuInput" class="sheet-anim fixed inset-x-0 bottom-0 bg-white rounded-t-[2rem] z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex flex-col max-h-[90vh]">
+        <div class="w-full flex justify-center py-4"><div class="w-12 h-1.5 bg-slate-200 rounded-full"></div></div>
+        <div class="px-6 pb-8 overflow-y-auto">
+            <h2 class="text-2xl font-black text-slate-800 mb-6">Input Kasbon Baru</h2>
+            <form id="formInput" class="space-y-4">
+                <div>
+                    <label class="text-[11px] font-black text-slate-400 uppercase">Nama Teknisi</label>
+                    <input type="text" id="in-nama" required class="w-full px-5 py-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:border-blue-600 outline-none font-bold mt-1" placeholder="Masukkan nama">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-[11px] font-black text-slate-400 uppercase">Total Pinjam</label>
+                        <input type="number" id="in-total" required class="w-full px-5 py-4 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:border-blue-600 outline-none font-black mt-1" placeholder="Rp">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-black text-slate-400 uppercase">Potongan/Bln</label>
+                        <input type="number" id="in-potongan" required class="w-full px-5 py-4 bg-blue-50 text-blue-700 rounded-2xl border-2 border-blue-200 focus:border-blue-600 outline-none font-black mt-1" placeholder="Rp">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black shadow-lg active:scale-95 transition-all uppercase tracking-widest mt-6">Simpan Data</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="menuData" class="sheet-anim fixed inset-x-0 bottom-0 bg-white rounded-t-[2rem] z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex flex-col">
+        <div class="w-full flex justify-center py-4"><div class="w-12 h-1.5 bg-slate-200 rounded-full"></div></div>
+        <div class="px-6 pb-8">
+            <h2 class="text-xl font-black text-slate-800 mb-6">Kelola Data</h2>
+            <div class="space-y-3">
+                <button onclick="backupKeFile()" class="w-full flex items-center gap-4 bg-blue-50 p-4 rounded-2xl border border-blue-100 active:scale-95 transition-all">
+                    <div class="bg-blue-600 p-3 rounded-xl text-white"><i data-lucide="download"></i></div>
+                    <div class="text-left flex-1"><h4 class="font-black text-blue-800">Download Backup</h4><p class="text-[10px] text-blue-600 font-bold">Simpan file .json ke HP/PC</p></div>
+                </button>
+                <input type="file" id="fileUpload" class="hidden" accept=".json" onchange="restoreDariFile(event)">
+                <button onclick="document.getElementById('fileUpload').click()" class="w-full flex items-center gap-4 bg-emerald-50 p-4 rounded-2xl border border-emerald-100 active:scale-95 transition-all">
+                    <div class="bg-emerald-500 p-3 rounded-xl text-white"><i data-lucide="upload"></i></div>
+                    <div class="text-left flex-1"><h4 class="font-black text-emerald-800">Restore Data</h4><p class="text-[10px] text-emerald-600 font-bold">Panggil kembali file backup</p></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // GANTI URL INI JIKA SUDAH PUNYA GOOGLE SCRIPT
+        const URL_GOOGLE_SHEET = "https://script.google.com/macros/s/AKfycbxksMaIL1fwxFhQ1aCx9kcgoK6nZnvu1EE3XIqie2TtbxNxM-hCXOiU2rTSIhHWdbk15A/exec"; 
+
+        let dbKasbon = [];
+        let selectedId = null;
+        let tampilanSaatIni = 'beranda'; // Bisa 'beranda' atau 'riwayat'
+
+        // FUNGSI WAKTU
+        function getWaktuSekarang() {
+            return new Date().toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB';
+        }
+
+        // ==========================================
+        // 1. CLOUD SYNC & FILE
+        // ==========================================
+        async function ambilDataDariCloud() {
+            try {
+                const response = await fetch(URL_GOOGLE_SHEET);
+                const dataCloud = await response.json();
+                if(dataCloud && Array.isArray(dataCloud)) dbKasbon = dataCloud;
+                updateStatusCloud(true);
+            } catch (error) {
+                // SAYA UBAH NAMA DATABASE LOKAL DI SINI MENJADI "rnbKasbonDB_Final" AGAR HP MEMBUAT DATABASE KOSONG BARU
+                dbKasbon = JSON.parse(localStorage.getItem('rnbKasbonDB_Final')) || [];
+                updateStatusCloud(false);
+            }
+            renderLayar();
+        }
+
+        async function simpanKeCloud() {
+            document.getElementById('status-cloud').innerHTML = '<div class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div><span class="text-[9px] font-bold uppercase tracking-wider text-white">Menyimpan...</span>';
+            // SAYA UBAH NAMA DATABASE LOKAL DI SINI MENJADI "rnbKasbonDB_Final"
+            localStorage.setItem('rnbKasbonDB_Final', JSON.stringify(dbKasbon));
+
+            if (URL_GOOGLE_SHEET !== "PASTE_URL_WEB_APP_DISINI") {
+                try {
+                    await fetch(URL_GOOGLE_SHEET, { method: 'POST', body: JSON.stringify(dbKasbon) });
+                    updateStatusCloud(true);
+                } catch (error) { updateStatusCloud(false); }
+            } else { updateStatusCloud(false, "Mode Lokal"); }
+        }
+
+        function updateStatusCloud(sukses, pesanCustom) {
+            const el = document.getElementById('status-cloud');
+            if (sukses) el.innerHTML = '<div class="w-2 h-2 bg-emerald-400 rounded-full"></div><span class="text-[9px] font-bold uppercase tracking-wider text-white">Tersinkronisasi</span>';
+            else el.innerHTML = `<div class="w-2 h-2 bg-slate-300 rounded-full"></div><span class="text-[9px] font-bold uppercase tracking-wider text-white">${pesanCustom || 'Offline (Tersimpan Lokal)'}</span>`;
+        }
+
+        function backupKeFile() {
+            if(dbKasbon.length === 0) return alert("Kosong!");
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dbKasbon));
+            const dl = document.createElement('a');
+            dl.setAttribute("href", dataStr); dl.setAttribute("download", `RnB_Kasbon_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(dl); dl.click(); dl.remove(); tutupSemuaMenu();
+        }
+
+        function restoreDariFile(event) {
+            const file = event.target.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if(Array.isArray(data)) { dbKasbon = data; simpanKeCloud(); renderLayar(); tutupSemuaMenu(); alert("Data dipulihkan!"); } 
+                    else alert("Format salah!");
+                } catch(err) { alert("Gagal baca file."); }
+            };
+            reader.readAsText(file); event.target.value = ''; 
+        }
+
+        // ==========================================
+        // 2. KONTROL MENU & NAVIGASI
+        // ==========================================
+        function bukaMenu(id) {
+            const overlay = document.getElementById('overlay');
+            const menu = document.getElementById(id);
+            overlay.classList.remove('hidden');
+            setTimeout(() => { overlay.classList.remove('opacity-0'); menu.classList.add('active'); }, 10);
+        }
+
+        function tutupSemuaMenu() {
+            document.getElementById('overlay').classList.add('opacity-0');
+            document.querySelectorAll('.sheet-anim').forEach(m => m.classList.remove('active'));
+            setTimeout(() => { document.getElementById('overlay').classList.add('hidden'); }, 300);
+        }
+
+        function ubahTampilan(menu) {
+            tampilanSaatIni = menu;
+            
+            // Atur warna tombol nav
+            document.getElementById('nav-beranda').className = `flex flex-col items-center p-2 w-20 transition-all ${menu === 'beranda' ? 'text-blue-700' : 'text-slate-400'}`;
+            document.getElementById('nav-riwayat').className = `flex flex-col items-center p-2 w-20 transition-all ${menu === 'riwayat' ? 'text-blue-700' : 'text-slate-400'}`;
+            
+            // Sembunyikan tombol FAB "+" di riwayat
+            document.getElementById('btn-tambah-fab').style.display = menu === 'beranda' ? 'flex' : 'none';
+            document.getElementById('judul-halaman').innerText = menu === 'beranda' ? 'Daftar Karyawan' : 'Bukti Lunas (Arsip)';
+            
+            renderLayar();
+        }
+
+        // ==========================================
+        // 3. LOGIKA RENDER TAMPILAN
+        // ==========================================
+        function renderLayar() {
+            const listContainer = document.getElementById('mainList');
+            listContainer.innerHTML = '';
+            
+            let totalKeluarAktif = 0, totalSisaAktif = 0;
+            
+            // Memisahkan data aktif dan riwayat (diarsipkan)
+            const dataAktif = dbKasbon.filter(x => !x.isArsip);
+            const dataRiwayat = dbKasbon.filter(x => x.isArsip);
+            
+            // Hitung Header Stats HANYA dari data yang aktif
+            dataAktif.forEach(item => {
+                totalKeluarAktif += item.total;
+                totalSisaAktif += (item.total - item.sudahBayar);
+            });
+            document.getElementById('stat-total-pinjaman').innerText = `Rp ${totalKeluarAktif.toLocaleString('id-ID')}`;
+            document.getElementById('stat-sisa').innerText = `Rp ${totalSisaAktif.toLocaleString('id-ID')}`;
+
+            // Tentukan data mana yang mau di-render di layar
+            const dataDitampilkan = tampilanSaatIni === 'beranda' ? dataAktif : dataRiwayat;
+            document.getElementById('count-data').innerText = `${dataDitampilkan.length} Data`;
+
+            if(dataDitampilkan.length === 0) {
+                listContainer.innerHTML = `<div class="text-center py-10 opacity-40"><i data-lucide="${tampilanSaatIni === 'beranda' ? 'users' : 'archive'}" class="w-12 h-12 text-slate-500 mx-auto mb-2"></i><p class="font-black text-slate-600 text-sm">${tampilanSaatIni === 'beranda' ? 'Tidak ada karyawan aktif' : 'Belum ada arsip riwayat lunas'}</p></div>`;
+            }
+
+            dataDitampilkan.forEach(item => {
+                const sisaUtang = item.total - item.sudahBayar;
+                const isLunas = sisaUtang <= 0;
+
+                if (tampilanSaatIni === 'beranda') {
+                    // DESAIN KARTU BERANDA (AKTIF)
+                    listContainer.insertAdjacentHTML('beforeend', `
+                        <div onclick="bukaDetail(${item.id})" class="bg-white p-4 rounded-[1rem] shadow-sm border border-slate-100 flex justify-between items-center active:scale-95 transition-all cursor-pointer">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-[0.8rem] ${isLunas ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-700'} flex items-center justify-center font-black text-xl shadow-inner">
+                                    ${item.nama.substring(0,1).toUpperCase()}
+                                </div>
+                                <div>
+                                    <h4 class="font-black text-slate-800 text-base">${item.nama}</h4>
+                                    <p class="text-[10px] font-bold ${isLunas ? 'text-emerald-500' : 'text-slate-400'} mt-0.5">
+                                        ${isLunas ? 'LUNAS (Siap Diarsipkan)' : 'Utang: Rp ' + sisaUtang.toLocaleString('id-ID')}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center"><i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i></div>
+                        </div>
+                    `);
+                } else {
+                    // DESAIN KARTU RIWAYAT (BUKTI)
+                    listContainer.insertAdjacentHTML('beforeend', `
+                        <div class="bg-white p-5 rounded-[1.5rem] shadow-sm border border-slate-200">
+                            <div class="flex justify-between items-start mb-3 border-b border-slate-100 pb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-black">${item.nama.substring(0,1).toUpperCase()}</div>
+                                    <div>
+                                        <h4 class="font-black text-slate-800 text-base">${item.nama}</h4>
+                                        <p class="text-[10px] font-bold text-slate-400">Total: Rp ${item.total.toLocaleString('id-ID')}</p>
+                                    </div>
+                                </div>
+                                <div class="bg-emerald-100 text-emerald-600 text-[9px] font-black uppercase px-2 py-1 rounded-md">LUNAS ✅</div>
+                            </div>
+                            <div class="bg-slate-50 p-3 rounded-xl space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase"><i data-lucide="calendar" class="w-3 h-3 inline"></i> Waktu Pinjam</span>
+                                    <span class="text-[10px] font-bold text-slate-700">${item.tanggalPinjam}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[9px] font-bold text-emerald-600 uppercase"><i data-lucide="check-circle" class="w-3 h-3 inline"></i> Bukti Lunas</span>
+                                    <span class="text-[10px] font-bold text-emerald-700">${item.waktuLunas || '-'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                }
+            });
+
+            lucide.createIcons();
+        }
+
+        // ==========================================
+        // 4. LOGIKA DETAIL, BAYAR & ARSIP
+        // ==========================================
+        function bukaDetail(id) {
+            const item = dbKasbon.find(x => x.id === id);
+            selectedId = id;
+            const sisaUtang = item.total - item.sudahBayar;
+            const progresPersen = (item.sudahBayar / item.total) * 100;
+
+            document.getElementById('det-avatar').innerText = item.nama.substring(0,1).toUpperCase();
+            document.getElementById('det-nama').innerText = item.nama;
+            document.getElementById('det-potongan').innerText = `Potong: Rp ${item.potongan.toLocaleString('id-ID')} /bln`;
+            document.getElementById('det-sisa').innerText = sisaUtang <= 0 ? 'LUNAS ✅' : `Rp ${sisaUtang.toLocaleString('id-ID')}`;
+            document.getElementById('det-sisa').className = `text-2xl font-black tracking-tighter ${sisaUtang <= 0 ? 'text-emerald-500' : 'text-red-600'}`;
+            document.getElementById('det-masuk').innerText = `Rp ${item.sudahBayar.toLocaleString('id-ID')}`;
+            document.getElementById('det-total').innerText = `Total: Rp ${item.total.toLocaleString('id-ID')}`;
+            document.getElementById('det-progress-bar').style.width = `${Math.min(progresPersen, 100)}%`;
+            document.getElementById('det-progress-text').innerText = `${Math.round(progresPersen)}% Lunas`;
+
+            // Tanggal Pinjam & Riwayat Angsuran Terakhir
+            document.getElementById('det-tgl-pinjam').innerText = item.tanggalPinjam || 'Belum tercatat';
+            document.getElementById('det-tgl-bayar').innerText = (item.riwayatBayar && item.riwayatBayar.length > 0) ? item.riwayatBayar[item.riwayatBayar.length - 1] : 'Belum ada angsuran';
+
+            const btnPotong = document.getElementById('btn-lanjut-bayar');
+            const btnArsipkan = document.getElementById('btn-arsipkan');
+
+            if(sisaUtang > 0) {
+                btnPotong.style.display = 'flex';
+                btnArsipkan.style.display = 'none';
+                btnPotong.onclick = () => { tutupSemuaMenu(); setTimeout(() => bukaKonfirmasiBayar(id), 300); };
+            } else {
+                btnPotong.style.display = 'none';
+                btnArsipkan.style.display = 'flex'; 
+            }
+
+            bukaMenu('menuDetail');
+        }
+
+        // FUNGSI ARSIP (Pindahkan ke Riwayat)
+        function arsipkanKeRiwayat() {
+            if(confirm("Pindahkan data lunas ini ke menu Riwayat sebagai bukti? Data akan hilang dari Beranda.")) {
+                const idx = dbKasbon.findIndex(x => x.id === selectedId);
+                dbKasbon[idx].isArsip = true;
+                dbKasbon[idx].waktuLunas = getWaktuSekarang(); // Simpan detik/menit pasti lunasnya
+                simpanKeCloud();
+                renderLayar();
+                tutupSemuaMenu();
+            }
+        }
+
+        function bukaKonfirmasiBayar(id) {
+            const item = dbKasbon.find(x => x.id === id);
+            selectedId = id;
+            document.getElementById('pay-nama-label').innerText = item.nama;
+            document.getElementById('pay-nominal').innerText = `Rp ${Math.min(item.potongan, item.total - item.sudahBayar).toLocaleString('id-ID')}`;
+            bukaMenu('menuBayar');
+        }
+
+        function prosesBayarFinal() {
+            const idx = dbKasbon.findIndex(x => x.id === selectedId);
+            const item = dbKasbon[idx];
+            const nominalBayar = Math.min(item.potongan, item.total - item.sudahBayar);
+            
+            if(item.total - item.sudahBayar > 0) {
+                dbKasbon[idx].sudahBayar += nominalBayar;
+                if(!dbKasbon[idx].riwayatBayar) dbKasbon[idx].riwayatBayar = [];
+                dbKasbon[idx].riwayatBayar.push(getWaktuSekarang()); // Rekam waktu setiap kali potong gaji
+                
+                renderLayar();
+                simpanKeCloud();
+            }
+            tutupSemuaMenu();
+        }
+
+        // TAMBAH DATA
+        document.getElementById('formInput').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const total = parseFloat(document.getElementById('in-total').value);
+            const potongan = parseFloat(document.getElementById('in-potongan').value);
+            if(potongan > total) return alert("Potongan melebihi total kasbon!");
+
+            dbKasbon.push({ 
+                id: Date.now(), 
+                nama: document.getElementById('in-nama').value, 
+                total: total, 
+                potongan: potongan, 
+                sudahBayar: 0,
+                tanggalPinjam: getWaktuSekarang(),
+                riwayatBayar: [],
+                isArsip: false // Status arsip awal
+            });
+            
+            renderLayar();
+            simpanKeCloud();
+            tutupSemuaMenu();
+            this.reset();
+        });
+
+        // INIT
+        ambilDataDariCloud();
+
+    </script>
+</body>
+</html>
