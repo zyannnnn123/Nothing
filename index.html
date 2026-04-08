@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RNB.NET - Config Generator HG8145V5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e11d48;      /* Disesuaikan jadi merah senada dengan logo RnB */
+            --primary-hover: #be123c;
+            --card-bg: rgba(255, 255, 255, 0.95); /* Sedikit transparan agar background tembus */
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #d1d5db;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #111827; /* Warna gelap dasar */
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px; 
+            margin: 0; 
+            color: var(--text-main); 
+            box-sizing: border-box;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* INI ADALAH KODE UNTUK BACKGROUND LOGO ANDA */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url('https://i.postimg.cc/Hnf6CVmc/Logo-Rn-B.jpg');
+            background-size: cover; 
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.25; /* Tingkat transparansi background (0.0 sampai 1.0) */
+            z-index: -1;
+        }
+
+        .container { 
+            background-color: var(--card-bg); 
+            backdrop-filter: blur(10px); /* Efek blur kaca ala Apple/Modern UI */
+            width: 100%; 
+            max-width: 500px; 
+            padding: 40px; 
+            border-radius: 16px; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); 
+        }
+
+        .header { text-align: center; margin-bottom: 35px; }
+        .header .logo-text { font-size: 15px; font-weight: 800; color: var(--primary); letter-spacing: 1px; margin-bottom: 10px; display: block; }
+        .header h2 { font-size: 24px; font-weight: 700; margin: 0 0 10px 0; color: #111827; }
+        .header p { font-size: 14px; margin: 0; color: var(--text-muted); }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #374151; }
+        .form-group select, .form-group input { width: 100%; padding: 12px 16px; font-size: 15px; color: var(--text-main); background-color: #f9fafb; border: 1px solid var(--border-color); border-radius: 8px; outline: none; box-sizing: border-box; transition: all 0.2s ease; }
+
+        .form-group select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 20px; cursor: pointer; }
+        .form-group select:focus, .form-group input:focus { border-color: var(--primary); background-color: #ffffff; box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.15); }
+
+        #extra-forms { display: none; margin-top: 25px; padding: 20px; background-color: rgba(243, 244, 246, 0.8); border-radius: 12px; border: 1px dashed #d1d5db; }
+
+        .button-group { margin-top: 30px; }
+        .btn { width: 100%; padding: 14px 0; font-size: 15px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; border: none; margin-bottom: 10px; }
+        .btn-primary { background-color: var(--primary); color: #ffffff; }
+        .btn-primary:hover { background-color: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3); }
+        
+        .btn-success { background-color: #10b981; color: #ffffff; animation: pulse 2s infinite; }
+        .btn-success:hover { background-color: #059669; }
+
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+
+        .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <span class="logo-text">RnB Network </span>
+        <h2>Config Generator</h2>
+        <p>Huawei HG8145V5 WAN Solution</p>
+    </div>
+
+    <div class="form-group">
+        <label for="selectMode">Mode Router</label>
+        <select id="selectMode" onchange="toggleExtraForms()">
+            <option selected disabled value="">Pilih Mode Koneksi...</option>
+            <option value="bridge">Bridge Mode</option>
+            <option value="pppoe">PPPoE Mode</option>
+        </select>
+    </div>
+
+    <div id="extra-forms">
+        <div class="form-group">
+            <label for="selectVlan">VLAN Enable</label>
+            <select id="selectVlan" onchange="toggleVlanInput()">
+                <option value="0">No (Disable)</option>
+                <option value="1">Yes (Enable)</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="vlanIdGroup" style="display:none;">
+            <label for="vlanId">VLAN ID</label>
+            <input type="number" id="vlanId" placeholder="Contoh: 100" value="0">
+        </div>
+
+        <div id="pppoeInputs" style="display:none;">
+            <div class="form-group">
+                <label for="pppoeUser">Username PPPoE</label>
+                <input type="text" id="pppoeUser" placeholder="Masukkan Username">
+            </div>
+            <div class="form-group">
+                <label for="pppoePass">Password PPPoE</label>
+                <input type="text" id="pppoePass" placeholder="Masukkan Password">
+            </div>
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button type="button" class="btn btn-primary" onclick="generateConfig()">Generate Config</button>
+        <button type="button" id="btnDownload" class="btn btn-success" style="display:none;" onclick="downloadConfig()">⬇ Unduh File XML</button>
+    </div>
+
+    <div class="footer">
+        Created By Iyann RnB
+    </div>
+</div>
+
+<script type="text/plain" id="template-pppoe">
+[TUMPUK TULISAN INI DENGAN COPY-PASTE FULL XML PPPOE ANDA]
+</script>
+
+<script type="text/plain" id="template-bridge">
+[TUMPUK TULISAN INI DENGAN COPY-PASTE FULL XML BRIDGE ANDA]
+</script>
+
+<script>
+    let generatedXMLContent = "";
+
+    function toggleExtraForms() {
+        const mode = document.getElementById('selectMode').value;
+        const extraForms = document.getElementById('extra-forms');
+        const pppoeInputs = document.getElementById('pppoeInputs');
+        const btnDownload = document.getElementById('btnDownload');
+        btnDownload.style.display = 'none';
+
+        if (mode === 'pppoe') {
+            extraForms.style.display = 'block';
+            pppoeInputs.style.display = 'block';
+        } else if (mode === 'bridge') {
+            extraForms.style.display = 'block';
+            pppoeInputs.style.display = 'none';
+        } else {
+            extraForms.style.display = 'none';
+        }
+    }
+
+    function toggleVlanInput() {
+        const vlanEnable = document.getElementById('selectVlan').value;
+        const vlanIdGroup = document.getElementById('vlanIdGroup');
+        vlanIdGroup.style.display = (vlanEnable === '1') ? 'block' : 'none';
+    }
+
+    function generateConfig() {
+        const mode = document.getElementById('selectMode').value;
+        const vlanEnable = document.getElementById('selectVlan').value;
+        const vlanId = vlanEnable === '1' ? document.getElementById('vlanId').value : "0";
+        const pppoeUser = document.getElementById('pppoeUser').value;
+        const pppoePass = document.getElementById('pppoePass').value; 
+
+        if (!mode) {
+            alert("Silakan pilih Mode Router!");
+            return;
+        }
+
+        let currentTemplate = "";
+        if (mode === 'pppoe') {
+            currentTemplate = document.getElementById('template-pppoe').textContent;
+            
+            if(pppoeUser.trim() !== "") {
+                currentTemplate = currentTemplate.split('Username="Sukamelang"').join('Username="' + pppoeUser + '"');
+            }
+            
+            if(pppoePass.trim() !== "") {
+                const oldPass = 'Password="$2(eQ*CGtG&amp;~cRupKgpq3;=nWEA}Kv;I#uVSWtr=pV$"';
+                currentTemplate = currentTemplate.split(oldPass).join('Password="' + pppoePass + '"');
+            }
+
+            currentTemplate = currentTemplate.split('X_HW_VLAN="200"').join('X_HW_VLAN="' + vlanId + '"');
+            currentTemplate = currentTemplate.split('X_HW_CU_VLANEnabled="0"').join('X_HW_CU_VLANEnabled="' + vlanEnable + '"');
+        } else if (mode === 'bridge') {
+            currentTemplate = document.getElementById('template-bridge').textContent;
+            currentTemplate = currentTemplate.split('X_HW_VLAN="0"').join('X_HW_VLAN="' + vlanId + '"');
+            currentTemplate = currentTemplate.split('X_HW_CU_VLANEnabled="0"').join('X_HW_CU_VLANEnabled="' + vlanEnable + '"');
+        }
+
+        generatedXMLContent = currentTemplate;
+        alert("Config berhasil di-generate!");
+        document.getElementById('btnDownload').style.display = 'block';
+    }
+
+    function downloadConfig() {
+        if (!generatedXMLContent) return; 
+        
+        const mode = document.getElementById('selectMode').value;
+        const pppoeUser = document.getElementById('pppoeUser').value.trim();
+        
+        let fileName = "config_modem.xml"; 
+        
+        if (mode === 'pppoe') {
+            fileName = (pppoeUser !== "") ? pppoeUser + ".xml" : "pppoe_config.xml";
+        } else if (mode === 'bridge') {
+            fileName = "bridge_config.xml";
+        }
+
+        const blob = new Blob([generatedXMLContent], { type: 'text/xml' });
+        const linkDownload = document.createElement('a');
+        linkDownload.href = URL.createObjectURL(blob);
+        linkDownload.download = fileName;
+        
+        document.body.appendChild(linkDownload);
+        linkDownload.click();
+        document.body.removeChild(linkDownload);
+        URL.revokeObjectURL(linkDownload.href);
+    }
+</script>
+
+</body>
+</html>
