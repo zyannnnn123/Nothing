@@ -214,7 +214,6 @@
         const pppoeUser = document.getElementById('pppoeUser').value.trim();
         
         let fileName = "config_modem.xml"; 
-        
         if (mode === 'pppoe') {
             fileName = (pppoeUser !== "") ? pppoeUser + ".xml" : "pppoe_config.xml";
         } else if (mode === 'bridge') {
@@ -222,10 +221,32 @@
         }
 
         const blob = new Blob([generatedXMLContent], { type: 'text/xml' });
+
+        // SOLUSI UNTUK HP / APK (Menggunakan fitur Share Android)
+        const file = new File([blob], fileName, { type: "text/xml" });
+        
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            navigator.share({
+                title: 'Config Huawei HG8145V5',
+                text: 'File Config untuk: ' + fileName,
+                files: [file]
+            })
+            .then(() => console.log('Share berhasil.'))
+            .catch((error) => {
+                console.log('Share dibatalkan atau gagal', error);
+                fallbackDownload(blob, fileName); // Coba cara lama jika gagal
+            });
+        } else {
+            // SOLUSI UNTUK PC / BROWSER BIASA (Cara Lama)
+            fallbackDownload(blob, fileName);
+        }
+    }
+
+    // Fungsi Cara Lama (Dipisah agar rapi)
+    function fallbackDownload(blob, fileName) {
         const linkDownload = document.createElement('a');
         linkDownload.href = URL.createObjectURL(blob);
         linkDownload.download = fileName;
-        
         document.body.appendChild(linkDownload);
         linkDownload.click();
         document.body.removeChild(linkDownload);
