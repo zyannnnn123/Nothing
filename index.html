@@ -7,9 +7,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #e11d48; /* Merah RnB */
+            --primary: #e11d48; 
             --primary-hover: #be123c;
-            --card-bg: rgba(255, 255, 255, 0.98); /* Lebih pekat agar teks terbaca jelas di atas animasi */
+            --card-bg: rgba(255, 255, 255, 0.95); 
             --text-main: #1f2937;
             --text-muted: #4b5563;
             --border-color: #d1d5db;
@@ -17,7 +17,7 @@
 
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #0a0f1e; /* Warna gelap dasar jaringan */
+            background-color: #111827; 
             display: flex; 
             justify-content: center; 
             align-items: center;
@@ -27,70 +27,35 @@
             color: var(--text-main); 
             box-sizing: border-box;
             position: relative;
-            overflow-x: hidden; /* Sembunyikan elemen animasi yang keluar */
+            overflow-x: hidden; 
             z-index: 1;
         }
 
-        /* === CSS UNTUK ANIMASI BACKGROUND JARINGAN INTERNET === */
-        
-        /* Layer 1: Titik-titik Node Jaringan (Statis) */
+        /* === Background Logo Statis (Ringan untuk HP) === */
         body::before {
             content: "";
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-image: radial-gradient(rgba(225, 29, 72, 0.15) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: -2;
-            opacity: 0.8;
-        }
-
-        /* Layer 2: Aliran Data Node (Animasi Bergerak) */
-        body::after {
-            content: "";
-            position: fixed;
-            top: -100px;
-            left: -100px;
-            right: -100px;
-            bottom: -100px;
-            /* Pola lingkaran data: Merah, Biru Gelap, Merah Transparan */
-            background-image: 
-                radial-gradient(circle, var(--primary) 0%, transparent 10%),
-                radial-gradient(circle, rgba(79, 70, 229, 0.7) 0%, transparent 15%),
-                radial-gradient(circle, rgba(225, 29, 72, 0.3) 0%, transparent 20%);
-            background-size: 80px 80px, 150px 150px, 250px 250px;
-            background-position: 0 0, 0 0, 0 0;
-            opacity: 0.25; /* Transparan agar tidak mengganggu */
-            filter: blur(2px); /* Sedikit blur untuk kesan kedalaman */
+            background-image: url('https://i.postimg.cc/Hnf6CVmc/Logo-Rn-B.jpg');
+            background-size: cover; 
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.25; 
             z-index: -1;
-            animation: networkFlow 40s linear infinite; /* Panggil animasi */
-            will-change: transform; /* Optimalisasi performa */
         }
 
-        /* Definisi gerakan aliran data jaringan */
-        @keyframes networkFlow {
-            0% {
-                background-position: 0 0, 0 0, 0 0;
-            }
-            100% {
-                /* Setiap layer bergerak ke arah berbeda dengan kecepatan berbeda */
-                background-position: 1000px 1000px, -500px 500px, 300px -300px;
-            }
-        }
-
+        /* === Kotak UI === */
         .container { 
             background-color: var(--card-bg); 
-            backdrop-filter: blur(5px); 
+            backdrop-filter: blur(10px); 
             width: 100%; 
             max-width: 500px; 
             border-radius: 16px; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); 
             overflow: hidden; 
         }
 
-        .main-content {
-            padding: 40px;
-        }
-
+        .main-content { padding: 40px; }
         .header { text-align: center; margin-bottom: 30px; }
         .header .logo-text { font-size: 15px; font-weight: 800; color: var(--primary); letter-spacing: 1px; margin-bottom: 10px; display: block; }
         .header h2 { font-size: 24px; font-weight: 700; margin: 0 0 10px 0; color: #111827; }
@@ -116,70 +81,20 @@
 
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
 
-        .info-box {
-            margin-top: 25px;
-            padding: 15px;
-            background-color: #fef2f2;
-            border-left: 4px solid var(--primary);
-            border-radius: 4px;
-            font-size: 13px;
-            line-height: 1.5;
-            color: #4b5563;
-        }
+        .info-box { margin-top: 25px; padding: 15px; background-color: #fef2f2; border-left: 4px solid var(--primary); border-radius: 4px; font-size: 13px; line-height: 1.5; color: #4b5563; }
         .info-box b { color: #111827; }
         .info-box a { color: var(--primary); text-decoration: none; font-weight: 600; }
         .info-box a:hover { text-decoration: underline; }
 
-        /* === CSS UNTUK ATRIBUSI PENULIS & PANEL TEKS BERJALAN === */
-        
-        /* Baris Atribusi Created By (Di atas Marquee) */
-        .footer-attribution {
-            text-align: right;
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px solid #e5e7eb;
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-        .footer-attribution b {
-            color: #111827;
-            font-weight: 700;
-        }
+        .footer-attribution { text-align: right; margin-top: 15px; padding-top: 10px; border-top: 1px solid #e5e7eb; font-size: 11px; color: var(--text-muted); font-weight: 500; }
+        .footer-attribution b { color: #111827; font-weight: 700; }
 
         /* Panel Teks Berjalan */
-        .footer-marquee {
-            width: 100%;
-            background-color: #111827; /* Hitam pekat */
-            color: var(--primary); /* Merah RnB */
-            padding: 10px 0;
-            overflow: hidden;
-            position: relative;
-            white-space: nowrap;
-            border-top: 2px solid var(--primary);
-            box-sizing: border-box;
-        }
+        .footer-marquee { width: 100%; background-color: #111827; color: var(--primary); padding: 10px 0; overflow: hidden; position: relative; white-space: nowrap; border-top: 2px solid var(--primary); box-sizing: border-box; }
+        .marquee-content { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; animation: marqueeEffect 10s linear infinite; will-change: transform; }
+        .marquee-content span::after { content: " — RNB NETWORK SUBANG — "; color: #ffffff; }
 
-        .marquee-content {
-            display: inline-block;
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            animation: marqueeEffect 10s linear infinite;
-            will-change: transform;
-        }
-
-        /* Teks pemisah looping */
-        .marquee-content span::after {
-            content: " — RNB NETWORK SUBANG — "; 
-            color: #ffffff; /* Pemisah putih agar kontras */
-        }
-
-        @keyframes marqueeEffect {
-            0% { transform: translateX(0%); }
-            100% { transform: translateX(-50%); } 
-        }
+        @keyframes marqueeEffect { 0% { transform: translateX(0%); } 100% { transform: translateX(-50%); } }
     </style>
 </head>
 <body>
@@ -218,7 +133,7 @@
             <div id="pppoeInputs" style="display:none;">
                 <div class="form-group">
                     <label for="pppoeUser">Username PPPoE</label>
-                    <input type="text" id="pppoeUser" placeholder="Masukkan Username">
+                    <input type="text" id="pppoeUser" placeholder="Masukkan Username (Cth: pelanggan01)">
                 </div>
                 <div class="form-group">
                     <label for="pppoePass">Password PPPoE</label>
@@ -239,10 +154,13 @@
         </div>
 
         <div class="footer-attribution">Created By <b>Iyann</b></div>
-    </div> <div class="footer-marquee">
+    </div> 
+
+    <div class="footer-marquee">
         <div class="marquee-content">
             <span>RNB NETWORK SUBANG </span>
-            <span>RNB NETWORK SUBANG </span> </div>
+            <span>RNB NETWORK SUBANG </span> 
+        </div>
     </div>
 </div>
 
@@ -4332,10 +4250,21 @@
 
     function downloadConfig() {
         if (!generatedXMLContent) return; 
+        
         const mode = document.getElementById('selectMode').value;
         const pppoeUser = document.getElementById('pppoeUser').value.trim();
-        // Penamaan file yang lebih dinamis sesuai username PPPoE jika tersedia
-        let fileName = (mode === 'pppoe' && pppoeUser !== "") ? pppoeUser + ".xml" : "hw_tree.xml";
+        
+        let fileName = "config.xml"; 
+        
+        if (mode === 'pppoe') {
+            if (pppoeUser !== "") {
+                fileName = pppoeUser.replace(/\s+/g, '_') + ".xml";
+            } else {
+                fileName = "PPPoE_Tanpa_Nama.xml";
+            }
+        } else if (mode === 'bridge') {
+            fileName = "Config_Bridge.xml";
+        }
 
         const blob = new Blob([generatedXMLContent], { type: 'text/xml' });
         const linkDownload = document.createElement('a');
