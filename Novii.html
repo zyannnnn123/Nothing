@@ -1,93 +1,82 @@
-<html><meta charset='UTF-8'/><meta content='width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1, maximum-scale=5' name='viewport'/><meta content='IE=edge' http-equiv='X-UA-Compatible'/>
-
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
-  <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script><link href="https://htmlku.com/kamutau/play/style.css" rel="stylesheet" type="text/css" />
+<!DOCTYPE html>
+<html lang="id">
 
 <head>
-<title>Script HTML Dari Aku Untukmu - feeldream</title>
+  <meta charset="utf-8" />
+  <title>Kamu Tau Ga? 🫣 - Script HTML buat Kamu</title>
+  <meta name="description" content="@feelthisray - Script HTML by Feeldream.id">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+ 
+  <link rel="icon" type="image/svg+xml" href="https://feeldreams.github.io/main-icon.png"> 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="style.css"><script src="https://unpkg.com/scrollreveal"></script><script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+  <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script><link rel="stylesheet" href="https://htmlku.com/apabedanya/style.css">
 </head>
+
 <body>
-	
+
+    <!-- Audio -->
+    <audio src="https://feeldreams.github.io/audio/kasihtinggal.mp3" id="linkmp3" class="sembunyi"></audio>
+
+    <!-- Overlay -->
+	<div class="overlay">
+		<div class="cover">
+	    <p style="font-size:17px;font-weight:700;margin:0">Buka ini yaa <span style="color:pink">Novii</span> 💞</p>
+	   <div id="loveIn" class="awalan">
+	     <svg class='line' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><g transform='translate(2.000000, 2.000000)'><path d='M9.27542857,0.714285714 C14.0030476,0.714285714 17.836381,4.54666667 17.836381,9.2752381 C17.836381,14.0038095 14.0030476,17.8361905 9.27542857,17.8361905 C4.54685714,17.8361905 0.71447619,14.0038095 0.71447619,9.2752381 C0.71447619,4.54666667 4.54685714,0.714285714 9.27542857,0.714285714 Z'></path><path d='M17.8989524,16.487619 C18.678,16.487619 19.3094286,17.12 19.3094286,17.8980952 C19.3094286,18.6780952 18.678,19.3095238 17.8989524,19.3095238 C17.1199048,19.3095238 16.4875238,18.6780952 16.4875238,17.8980952 C16.4875238,17.12 17.1199048,16.487619 17.8989524,16.487619 Z'></path></g></svg>
+	     <label style="font-size:16px">linkr.bio/zyann</label>
+	   </div>
+	</div>
+   </div>
+   
+   <!-- Wallpaper -->
    <div id="bodyblur">
-     <!-- Wallpaper / Background --><img src="https://i.postimg.cc/NF7Y027s/Whats-App-Image-2026-03-27-at-10-08-10.jpg" id="wallpaper"/>
+     <img src="https://i.postimg.cc/hjnZbr68/Whats-App-Image-2026-03-29-at-14-34-33.jpg" id="wallpaper"/>
    </div>
-  
-  <div class="kumpulanstiker">
-         <!-- Stiker untuk Konten -->
-         <img src="https://feeldreams.github.io/pandapanah.gif" id="stiker1"/>
-         <img src="https://feeldreams.github.io/cilukba.gif" id="stiker2"/>
-         <img src="https://feeldreams.github.io/mikir.gif" id="stiker3"/>
-         <img src="https://feeldreams.github.io/pusn.gif" id="stiker4"/>
-         <img src="https://feeldreams.github.io/weee.gif" id="stiker5"/>
-  </div>
-
-   <div id='Content'>
-   	
-     <div id="suratin" onClick="memulai();audio.play();">
-       <!-- Surat --><img src="https://rayyscoding.github.io/envelope.png"/>
-     </div>
-     <p id="ket">Klik Suratnya Cantik!</p>
    
-     <div>
-      <!-- Foto Akhir -->
-      <img src="https://feeldreams.github.io/gumush.gif" id="fotoakhir" />
-      <img src="https://feeldreams.github.io/emawh.gif" id="fotoakhir2" />
+    <!-- Swiper -->
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+
+            <!-- Slide 1 -->
+            <div class="swiper-slide">
+                <div id="stiker1" class="scale0 stiker">
+                    <img src="https://htmlku.com/0/panda/pusn3.gif" />
+                </div>
+                <h1 id="teks1" class="scale0 quicksand" style="font-size: 20px;">Kamuu Tau Gaa? 🫣<br><br> >>>>
+                </h1>
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="swiper-slide">
+                <div id="stiker2" class="scale0 stiker">
+                    <img src="https://htmlku.com/0/panda/mikir.gif" />
+                </div>
+                <h1 id="teks2" class="scale0 quicksand" style="font-size: 18px;">Aku <span style="color:yellow">sangat</span><br>Sayangggg <span style="color:pink">Banget sama kamu</span>? 🫢<br><br> >>>></h1>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="swiper-slide">
+                <div id="stiker3" class="scale0 stiker" style="margin-top:100px">
+				    <img id="stikerAkhir1" src="https://htmlku.com/0/panda/inicinta2.gif" />
+                    <img id="stikerAkhir2" class="sembunyi" src="https://htmlku.com/0/panda/terlope2.gif" />
+				</div>
+                <div class="blocktext">
+                    <p id="teks3" class="scale0 quicksand" style="font-size: 18px;font-weight:400">Main <span style="color:yellow">Dadu</span> Minum Jamu,<br>Aku <span style="color:pink">Rindu</span> Kamu,<br>kapan <br>kita bertemu<br><br>ᯓᡣ𐭩<br>ikan hiu makan duku<br><span style="color:pink;font-weight:700">Novii</span> Punyaku<br>iyahhh Punyakuuu<br><span style="text-shadow:none;padding:3px 5px;background:#fff;border-radius:18px">😍🥳💐🌹🫶🩷</span></p>
+                </div>
+            </div>
+
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-pagination"></div>
     </div>
-     <div><blockquote id='bq'>
-       <p id="kalimat"></p>
-       <p id="kalimatc"></p>
-     </blockquote></div>
-   
-     <!-- Tombol Kirim Pesan -->
-     <div id="Tombol">
-       <a onClick="sjawab()">
-         <b>💌 Balas</b>
-       </a>
-     </div>
-     
-   </div>
+    
+    <!-- Circle Animation -->
+    <div id="circgroup"><div><div class="circ"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div></div>
 
-   <script src="https://htmlku.com/kamutau/play/script.js"></script>
-   <script src="https://htmlku.com/script.js"></script>
-
-<!-- Ganti Kata², Foto, Lagu di bawah ya
-1) Upload foto ke https://postimages.org
-     buat dapetin linknya
-2) Ganti Lagu Upload ke replit.com
-     atau bisa juga ke mailboxdrive.com -->
-
-<script type="text/javascript">
-       async function pertama(){
-         audio = new Audio('https://feeldreams.github.io/audio/angelbaby.mp3');showDiv();
-       } pertama();
-	
-       
-       async function pesan(){
-             	await swalst.fire({
-                  title: 'Alooo Novii! 😍', 
-                  imageUrl: '' + stiker1.src,
-                  });   	
-                 await swalst.fire({
-                  title: 'Novii Tau Ngga? 😋🥰',
-                  imageUrl: '' + stiker2.src,
-                  });
-                 await swalst.fire({
-                  title: 'Bedanya Helm Sama <br>Novii Itu Apa? 😆',
-                  imageUrl: '' + stiker3.src,
-                  });
-                  await swalst.fire({
-                  title: 'Kalo Helm Itu<br>buat Kepala...',
-                  imageUrl: '' + stiker4.src,
-                  });
-                  await swalst.fire({
-                  title: 'Kalo Novii Itu buat<br>Aku Aja! 😋🥰😝',
-                  imageUrl: '' + stiker5.src,
-                  });
-                  
-                  katangetik = "<b class='putih merah fontalt'>Awkwkwk 😝</b><br><br><b>Terakhir deh,<br>Mie Mie Apa yang Ngangenin? 😋🥰<br>-<br>Miekirin Novii dongggg 😋<br>";
-                  
-                 setTimeout(kpemb,200);
-            }
-</script>
+    <!-- Script JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://htmlku.com/apabedanya/script.js"></script>
 </body>
 </html>
