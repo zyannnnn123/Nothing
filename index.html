@@ -131,6 +131,9 @@
 
         #extra-forms { display: none; margin-top: 25px; padding: 20px; background-color: rgba(243, 244, 246, 0.9); border-radius: 12px; border: 1px dashed #d1d5db; }
 
+        /* Style untuk Section Section WLAN */
+        .section-title { font-size: 14px; font-weight: 700; margin: 20px 0 15px 0; color: #111827; border-bottom: 2px solid #e5e7eb; padding-bottom: 5px; }
+
         .button-group { margin-top: 30px; display: flex; flex-direction: column; gap: 10px; }
         .btn { width: 100%; padding: 14px 0; font-size: 15px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; border: none; display: flex; justify-content: center; align-items: center; gap: 8px; }
         
@@ -167,7 +170,7 @@
 <div id="splashScreen">
     <div class="splash-logo">RnB Network</div>
     <div class="splash-subtitle">Config Generator HG8145V5</div>
-    <button class="btn-enter" onclick="enterApp()">Buka Generator 🚀</button>
+    <button class="btn-enter" onclick="enterApp()">Buka Generator Guys </button>
 </div>
 
 <div id="mainApp" style="display: none;">
@@ -176,7 +179,7 @@
             <div class="header">
                 <span class="logo-text">RnB Network Subang</span>
                 <h2>Config Generator</h2>
-                <p>Huawei HG8145V5 WAN Solution</p>
+                <p>Huawei HG8145V5 WAN & WLAN Solution</p>
             </div>
 
             <div class="form-group">
@@ -190,6 +193,7 @@
             </div>
 
             <div id="extra-forms">
+                <div class="section-title">Konfigurasi WAN</div>
                 <div class="form-group">
                     <label for="selectVlan">VLAN Enable</label>
                     <select id="selectVlan" onchange="toggleVlanInput()">
@@ -218,10 +222,31 @@
                         <input type="text" id="pppoePass" placeholder="Masukkan Password">
                     </div>
                 </div>
+
+                <div id="wlanInputs" style="display:none;">
+                    <div class="section-title">Konfigurasi Wi-Fi (WLAN)</div>
+                    <div class="form-group">
+                        <label for="wlan24Ssid">Nama Wi-Fi 2.4G (SSID)</label>
+                        <input type="text" id="wlan24Ssid" placeholder="Contoh: RnB Network_2.4G">
+                    </div>
+                    <div class="form-group">
+                        <label for="wlan24Pass">Password Wi-Fi 2.4G</label>
+                        <input type="text" id="wlan24Pass" placeholder="Minimal 8 karakter">
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label for="wlan5Ssid">Nama Wi-Fi 5G (SSID)</label>
+                        <input type="text" id="wlan5Ssid" placeholder="Contoh: RnB Network_5G">
+                    </div>
+                    <div class="form-group">
+                        <label for="wlan5Pass">Password Wi-Fi 5G</label>
+                        <input type="text" id="wlan5Pass" placeholder="Minimal 8 karakter">
+                    </div>
+                </div>
+
             </div>
 
             <div class="button-group">
-                <button type="button" class="btn btn-primary" onclick="generateConfig()">⚙️ Generate Config</button>
+                <button type="button" class="btn btn-primary" onclick="generateConfig()"> Generate Config</button>
                 <button type="button" id="btnDownload" class="btn btn-success" style="display:none;" onclick="downloadConfig()">⬇ Unduh File XML</button>
             </div>
 
@@ -6071,7 +6096,6 @@
 <script>
     let generatedXMLContent = "";
 
-    // === SCRIPT MASUK & NYALAKAN MUSIK ===
     function enterApp() {
         const audio = document.getElementById("bgMusic");
         const splash = document.getElementById("splashScreen");
@@ -6094,6 +6118,7 @@
         const mode = document.getElementById('selectMode').value;
         const extraForms = document.getElementById('extra-forms');
         const pppoeInputs = document.getElementById('pppoeInputs');
+        const wlanInputs = document.getElementById('wlanInputs');
         const btnDownload = document.getElementById('btnDownload');
         const labelVlan1 = document.getElementById('labelVlan1');
 
@@ -6102,20 +6127,22 @@
         if (mode === 'pppoe') {
             extraForms.style.display = 'block';
             pppoeInputs.style.display = 'block';
+            wlanInputs.style.display = 'block';
             labelVlan1.innerText = "VLAN ID";
         } else if (mode === 'bridge') {
             extraForms.style.display = 'block';
             pppoeInputs.style.display = 'none';
+            wlanInputs.style.display = 'block';
             labelVlan1.innerText = "VLAN ID";
         } else if (mode === 'pppoe_voucher') {
             extraForms.style.display = 'block';
             pppoeInputs.style.display = 'block';
+            wlanInputs.style.display = 'block';
             labelVlan1.innerText = "VLAN ID (Internet/PPPoE)";
         } else {
             extraForms.style.display = 'none';
         }
 
-        // Refresh tampilan input VLAN
         toggleVlanInput();
     }
 
@@ -6127,7 +6154,6 @@
 
         if (vlanEnable === '1') {
             vlanIdGroup.style.display = 'block';
-            // Tampilkan input VLAN Voucher HANYA jika mode nya pppoe_voucher
             vlanVoucherGroup.style.display = (mode === 'pppoe_voucher') ? 'block' : 'none';
         } else {
             vlanIdGroup.style.display = 'none';
@@ -6137,11 +6163,19 @@
 
     function generateConfig() {
         const mode = document.getElementById('selectMode').value;
+        
+        // Value WAN
         const vlanEnable = document.getElementById('selectVlan').value;
         const vlanId = vlanEnable === '1' ? document.getElementById('vlanId').value : "0";
         const vlanIdVoucher = vlanEnable === '1' ? document.getElementById('vlanIdVoucher').value : "0";
         const pppoeUser = document.getElementById('pppoeUser').value;
         const pppoePass = document.getElementById('pppoePass').value; 
+        
+        // Value WLAN
+        const wlan24Ssid = document.getElementById('wlan24Ssid').value;
+        const wlan24Pass = document.getElementById('wlan24Pass').value;
+        const wlan5Ssid = document.getElementById('wlan5Ssid').value;
+        const wlan5Pass = document.getElementById('wlan5Pass').value;
 
         if (!mode) {
             alert("Silakan pilih Mode Router!");
@@ -6176,14 +6210,26 @@
                 const oldPass = 'Password="$2(eQ*CGtG&amp;~cRupKgpq3;=nWEA}Kv;I#uVSWtr=pV$"';
                 currentTemplate = currentTemplate.split(oldPass).join('Password="' + pppoePass + '"');
             }
-            
-            // Ganti VLAN PPPoE
             currentTemplate = currentTemplate.split('X_HW_VLAN="200"').join('X_HW_VLAN="' + vlanId + '"');
-            
-            // Ganti VLAN Voucher (Pastikan di XML agan menggunakan X_HW_VLAN_VOUCHER="300" sebagai dummy)
             currentTemplate = currentTemplate.split('X_HW_VLAN_VOUCHER="300"').join('X_HW_VLAN="' + vlanIdVoucher + '"');
-            
             currentTemplate = currentTemplate.split('X_HW_CU_VLANEnabled="0"').join('X_HW_CU_VLANEnabled="' + vlanEnable + '"');
+        }
+
+        // --- PENGGANTIAN WLAN 2.4G & 5G ---
+        // 2.4G SSID & Pass
+        if(wlan24Ssid.trim() !== "") {
+            currentTemplate = currentTemplate.split('SSIDName="WIFI_24G_DUMMY"').join('SSIDName="' + wlan24Ssid + '"');
+        }
+        if(wlan24Pass.trim() !== "") {
+            currentTemplate = currentTemplate.split('PreSharedKey="PASS_24G_DUMMY"').join('PreSharedKey="' + wlan24Pass + '"');
+        }
+
+        // 5G SSID & Pass
+        if(wlan5Ssid.trim() !== "") {
+            currentTemplate = currentTemplate.split('SSIDName="WIFI_5G_DUMMY"').join('SSIDName="' + wlan5Ssid + '"');
+        }
+        if(wlan5Pass.trim() !== "") {
+            currentTemplate = currentTemplate.split('PreSharedKey="PASS_5G_DUMMY"').join('PreSharedKey="' + wlan5Pass + '"');
         }
 
         generatedXMLContent = currentTemplate;
