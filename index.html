@@ -6217,26 +6217,27 @@
         }
 
         // --- PENGGANTIAN WLAN 2.4G & 5G ---
-        // 2.4G SSID & Pass
+        
+        // 2.4G SSID
         if(wlan24Ssid.trim() !== "") {
+            // Mengatasi format SSID=".." maupun SSIDName=".."
             currentTemplate = currentTemplate.split('SSID="WIFI_24G_DUMMY"').join('SSID="' + wlan24Ssid + '"');
+            currentTemplate = currentTemplate.split('SSIDName="WIFI_24G_DUMMY"').join('SSIDName="' + wlan24Ssid + '"');
         }
+        
+        // 2.4G Password
         if(wlan24Pass.trim() !== "") {
             currentTemplate = currentTemplate.split('PreSharedKey="PASS_24G_DUMMY"').join('PreSharedKey="' + wlan24Pass + '"');
         }
 
-        // 5G SSID & Pass
+        // 5G SSID
         if(wlan5Ssid.trim() !== "") {
+            // Mengatasi format SSID=".." maupun SSIDName=".."
             currentTemplate = currentTemplate.split('SSID="WIFI_5G_DUMMY"').join('SSID="' + wlan5Ssid + '"');
-        }
-        if(wlan5Pass.trim() !== "") {
-            currentTemplate = currentTemplate.split('PreSharedKey="PASS_5G_DUMMY"').join('PreSharedKey="' + wlan5Pass + '"');
-        }
-
-        // 5G SSID & Pass
-        if(wlan5Ssid.trim() !== "") {
             currentTemplate = currentTemplate.split('SSIDName="WIFI_5G_DUMMY"').join('SSIDName="' + wlan5Ssid + '"');
         }
+        
+        // 5G Password
         if(wlan5Pass.trim() !== "") {
             currentTemplate = currentTemplate.split('PreSharedKey="PASS_5G_DUMMY"').join('PreSharedKey="' + wlan5Pass + '"');
         }
