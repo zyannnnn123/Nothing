@@ -3,263 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RnB Network | Premium Mobile Generator</title>
+    <title>RnB Network | Premium Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
+            --bg-dark: #050505;
+            --card-bg: #121212;
             --gold: #D4AF37;
+            --gold-glow: rgba(212, 175, 55, 0.3);
             --ruby: #E11D48;
-            --ruby-dark: #BE123C;
-            --dark-bg: #090C14;
-            --glass: rgba(16, 23, 38, 0.8);
-            --border: rgba(212, 175, 55, 0.3);
-            --text: #F1F5F9;
+            --ruby-dark: #9F1239;
+            --text-main: #F8FAFC;
             --text-dim: #94A3B8;
+            --border-glass: rgba(255, 255, 255, 0.08);
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body, html { 
             font-family: 'Montserrat', sans-serif; 
-            background-color: var(--dark-bg); 
-            margin: 0; padding: 0;
-            color: var(--text);
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
+            background-color: var(--bg-dark); 
+            margin: 0; padding: 0; color: var(--text-main);
+            min-height: 100vh; overflow-x: hidden;
         }
 
-        /* Ambient Background */
-        .bg-layer {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at top right, rgba(225, 29, 72, 0.1), transparent 40%),
-                        radial-gradient(circle at bottom left, rgba(212, 175, 55, 0.05), transparent 40%);
-            z-index: -1;
+        /* --- 1. ANIMASI TEKS PALING ATAS (MARQUEE) --- */
+        .top-bar {
+            position: fixed; top: 0; left: 0; width: 100%; height: 35px;
+            background: linear-gradient(90deg, var(--ruby-dark), var(--ruby), var(--ruby-dark));
+            display: flex; align-items: center; overflow: hidden; z-index: 1000;
+            box-shadow: 0 2px 15px rgba(225, 29, 72, 0.4);
+            border-bottom: 1px solid var(--gold);
+        }
+        .marquee-text {
+            white-space: nowrap; font-size: 11px; font-weight: 800; letter-spacing: 3px;
+            color: #FFFFFF; text-transform: uppercase;
+            animation: scrollLeft 12s linear infinite;
+        }
+        .marquee-text span { color: var(--gold); margin: 0 10px; }
+        
+        @keyframes scrollLeft {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
         }
 
-        /* Splash Screen Mobile */
-        #splashScreen {
-            position: fixed;
-            inset: 0; background: var(--dark-bg);
-            z-index: 10000; display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            transition: 0.6s ease-out;
-        }
-        .splash-logo {
-            font-size: 28px; font-weight: 800; letter-spacing: 5px;
-            background: linear-gradient(to right, #FFF, var(--gold));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 30px; text-transform: uppercase;
+        /* --- 2. LAYOUT MOBILE APP --- */
+        .app-wrapper {
+            padding: 55px 15px 30px; /* Padding atas ditambah agar tidak tertutup marquee */
+            display: flex; flex-direction: column; align-items: center;
+            width: 100%; max-width: 500px; margin: 0 auto;
         }
 
-        /* Layout Container */
-        #mainApp {
-            display: none; opacity: 0;
-            padding: 20px 15px;
-            min-height: 100vh;
-            flex-direction: column; align-items: center;
-            transition: 1s ease;
+        /* ANIMASI MASUK (FADE UP) */
+        .fade-in-up {
+            opacity: 0; transform: translateY(20px);
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        .container {
-            width: 100%; max-width: 500px;
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            overflow: hidden;
-        }
+        .header { text-align: center; margin-bottom: 25px; width: 100%; }
+        .header h1 { font-size: 24px; margin: 0; font-weight: 800; color: var(--gold); letter-spacing: 1px; }
+        .header p { font-size: 11px; color: var(--text-dim); margin-top: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;}
 
-        .header {
-            padding: 30px 20px 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .header h2 { font-size: 20px; margin: 0; font-weight: 800; letter-spacing: 1px; color: #FFF; }
-        .header p { font-size: 11px; color: var(--gold); margin-top: 5px; font-weight: 600; text-transform: uppercase; }
-
-        .content { padding: 25px 20px; }
-
-        /* Input Styles */
-        .form-group { margin-bottom: 18px; }
-        .form-group label { 
-            display: block; font-size: 10px; font-weight: 700; 
-            color: var(--text-dim); text-transform: uppercase;
-            margin-bottom: 8px; letter-spacing: 1px;
-        }
-        .form-group input, .form-group select {
-            width: 100%; padding: 14px; font-size: 14px;
-            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px; color: #FFF; outline: none;
-            box-sizing: border-box; transition: 0.3s;
-            font-family: inherit;
-        }
-        .form-group input:focus, .form-group select:focus {
-            border-color: var(--gold); background: rgba(0,0,0,0.5);
-        }
-
-        /* Mobile Grid Fix */
-        .row { display: grid; grid-template-columns: 1fr; gap: 0; }
-        @media (min-width: 480px) {
-            .row { grid-template-columns: 1fr 1fr; gap: 15px; }
+        /* --- 3. PREMIUM DARK CARDS --- */
+        .card {
+            width: 100%; background: var(--card-bg);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px; padding: 25px 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
         }
 
         .section-title {
             font-size: 11px; font-weight: 800; color: var(--gold);
             text-transform: uppercase; letter-spacing: 1.5px;
-            margin: 25px 0 15px; display: flex; align-items: center;
+            margin-bottom: 15px; display: flex; align-items: center;
         }
-        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); margin-left: 10px; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(212, 175, 55, 0.2); margin-left: 10px; }
 
-        /* Actions */
+        /* --- 4. INPUT MEWAH --- */
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block; font-size: 10px; font-weight: 700; color: var(--text-dim);
+            text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px;
+        }
+        .input-dark {
+            width: 100%; padding: 16px; font-size: 14px; font-weight: 600;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px; color: #FFF; outline: none; transition: 0.3s;
+            font-family: inherit;
+        }
+        .input-dark:focus {
+            background: rgba(212, 175, 55, 0.05); border-color: var(--gold);
+            box-shadow: 0 0 0 3px var(--gold-glow);
+        }
+        .input-dark::placeholder { color: rgba(255,255,255,0.2); font-weight: 400; }
+
+        select.input-dark { 
+    appearance: none; 
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23D4AF37'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); 
+    background-repeat: no-repeat; background-position: right 16px center; background-size: 16px; 
+}
+
+/* Tambahan agar isi dropdown tidak putih */
+select.input-dark option {
+    background-color: #121212;
+    color: #F8FAFC;
+}
+        #selectPort { border-left: 4px solid var(--ruby); }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr; gap: 0; }
+        @media (min-width: 400px) { .grid-2 { grid-template-columns: 1fr 1fr; gap: 15px; } }
+
+        /* --- 5. TOMBOL ANIMASI --- */
         .btn {
-            width: 100%; padding: 16px; border-radius: 12px;
-            font-size: 14px; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 1.5px; border: none; cursor: pointer;
-            transition: 0.3s; margin-top: 10px; font-family: inherit;
+            width: 100%; padding: 18px; border-radius: 14px; font-size: 14px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 2px; border: none; cursor: pointer;
+            transition: 0.3s; font-family: inherit; margin-top: 10px;
         }
         .btn-gen {
-            background: linear-gradient(135deg, var(--ruby-dark), var(--ruby));
-            color: #FFF; box-shadow: 0 10px 20px rgba(225, 29, 72, 0.3);
+            background: linear-gradient(135deg, var(--gold), #B8860B); color: #000;
+            box-shadow: 0 10px 25px var(--gold-glow);
+            border: 1px solid #FFF;
         }
-        .btn-gen:active { transform: scale(0.98); }
+        .btn-gen:active { transform: scale(0.97); }
 
         .btn-dl {
-            background: linear-gradient(135deg, #0D9488, #14B8A6);
-            color: #FFF; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.3);
+            background: linear-gradient(135deg, var(--ruby-dark), var(--ruby)); color: #FFF;
+            box-shadow: 0 10px 25px rgba(225, 29, 72, 0.4); border: 1px solid #FFF;
+            display: none; animation: fadeIn 0.5s forwards;
         }
+        .btn-dl:active { transform: scale(0.97); }
 
-        .footer {
-            margin-top: 25px; text-align: center;
-            font-size: 10px; color: var(--text-dim);
-            letter-spacing: 1px;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .footer { margin-top: 25px; font-size: 10px; color: var(--text-dim); text-align: center; letter-spacing: 1px;}
         .footer b { color: var(--gold); }
-
-        /* Marquee Mobile */
-        .marquee {
-            width: 100%; max-width: 500px;
-            background: rgba(0,0,0,0.4); padding: 10px 0;
-            border-radius: 10px; margin-top: 20px; overflow: hidden;
-            border: 1px solid var(--border);
-        }
-        .marquee-inner {
-            display: inline-block; white-space: nowrap;
-            font-size: 9px; font-weight: 700; color: var(--gold);
-            animation: slide 15s linear infinite;
-        }
-        @keyframes slide { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
 
     </style>
 </head>
 <body>
 
-<div class="bg-layer"></div>
-<audio id="bgMusic" loop preload="auto">
-    <source src="https://zyannnnn123.github.io/Nothing/Sound.mp3" type="audio/mpeg">
-</audio>
-
-<div id="splashScreen">
-    <div class="splash-logo">RnB Network</div>
-    <button class="btn-enter" onclick="enterApp()" style="padding: 15px 40px; background: var(--ruby); color: #FFF; border-radius: 50px; border: none; font-weight: 800; font-family: inherit; letter-spacing: 2px;">~ Mulai ~</button>
-</div>
-
-<div id="mainApp">
-    <div class="container">
-        <div class="header">
-            <h2>RnB Network Subang</h2>
-            <p>Config Huawei HG8145V5</p>
-        </div>
-
-        <div class="content">
-            <div class="form-group">
-                <label>Profile Login</label>
-                <select id="selectPort" style="border-left: 3px solid var(--gold);">
-                    <option value="biru">Port Biru (Support)</option>
-                    <option value="hijau" selected>Port Hijau (Telecomadmin)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Pilih Settingan</label>
-                <select id="selectMode" onchange="toggleExtraForms()">
-                    <option selected disabled value="">-- PILIH MODE --</option>
-                    <option value="pppoe">PPPoE Only</option>
-                    <option value="pppoe_voucher">PPPoE + Voucher</option>
-                    <option value="bridge">Bridge Mode</option>
-                </select>
-            </div>
-
-            <div id="extra-forms" style="display:none;">
-                <div class="section-title">WAN & VLAN</div>
-                <div class="row">
-                    <div class="form-group">
-                        <label>VLAN Status</label>
-                        <select id="selectVlan" onchange="toggleVlanInput()">
-                            <option value="0">Disable</option>
-                            <option value="1" selected>Enable</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="vlanIdGroup">
-                        <label>VLAN ID (Internet)</label>
-                        <input type="number" id="vlanId" value="200">
-                    </div>
-                </div>
-
-                <div class="form-group" id="vlanVoucherGroup" style="display:none;">
-                    <label>VLAN ID (Hotspot/Voucher)</label>
-                    <input type="number" id="vlanIdVoucher" value="300">
-                </div>
-
-                <div id="pppoeInputs">
-                    <div class="form-group">
-                        <label>PPPoE Username</label>
-                        <input type="text" id="pppoeUser" placeholder="Username Pelanggan">
-                    </div>
-                    <div class="form-group">
-                        <label>PPPoE Password</label>
-                        <input type="text" id="pppoePass" placeholder="Password PPPoE">
-                    </div>
-                </div>
-
-                <div class="section-title">WLAN (SSID)</div>
-                <div class="row">
-                    <div class="form-group">
-                        <label>SSID 2.4GHz</label>
-                        <input type="text" id="wlan24Ssid" placeholder="Nama Wi-Fi 2.4G">
-                    </div>
-                    <div class="form-group">
-                        <label>Password 2.4GHz</label>
-                        <input type="text" id="wlan24Pass" placeholder="Min 8 Karakter">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label>SSID 5GHz</label>
-                        <input type="text" id="wlan5Ssid" placeholder="Nama Wi-Fi 5G">
-                    </div>
-                    <div class="form-group">
-                        <label>Password 5GHz</label>
-                        <input type="text" id="wlan5Pass" placeholder="Min 8 Karakter">
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn btn-gen" onclick="generateConfig()">Generate Config</button>
-            <button id="btnDownload" class="btn btn-dl" style="display:none;" onclick="downloadConfig()">Download XML File</button>
-            
-            <div class="footer">Created By <b>Iyann</b></div>
-        </div>
-    </div>
-
-    <div class="marquee">
-        <div class="marquee-inner">
-            RNB NETWORK SUBANG • 0878 4286 1656 • SUPPORT & TELECOMADMIN MODE • 
-        </div>
+<!-- ANIMASI MARQUEE PALING ATAS -->
+<div class="top-bar">
+    <div class="marquee-text">
+        RNB NETWORK SUBANG <span>✦</span> 0878 4286 1656 
     </div>
 </div>
 
-<script type="text/plain" id="xml-hijau-pppoe"><InternetGatewayDevice DBEncrypt="1">
+<div class="app-wrapper fade-in-up">
+    
+    <div class="header">
+        <h1>RNB NETWORK</h1>
+        <p>Config HG8145V5</p>
+    </div>
+
+    <!-- KARTU 1: PENGATURAN UTAMA -->
+    <div class="card">
+        <div class="section-title">Pilih</div>
+        <div class="form-group">
+            <select id="selectPort" class="input-dark">
+                <option value="biru">Port Biru (Support)</option>
+                <option value="hijau" selected>Port Hijau (Telecomadmin)</option>
+            </select>
+        </div>
+
+        <div class="section-title" style="margin-top: 25px;">Pilihan Mode</div>
+        <div class="form-group" style="margin-bottom: 0;">
+            <select id="selectMode" class="input-dark" onchange="toggleExtraForms()">
+                <option selected disabled value="">-- Pilih Mode Koneksi --</option>
+                <option value="pppoe">PPPoE Mode</option>
+                <option value="pppoe_voucher">PPPoE + Voucher Mode</option>
+                <option value="bridge">Bridge Mode</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- KARTU 2: FORM DINAMIS -->
+    <div id="extra-forms" class="card" style="display:none;">
+        
+        <div class="section-title">Konfigurasi VLAN</div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Status VLAN</label>
+                <select id="selectVlan" class="input-dark" onchange="toggleVlanInput()">
+                    <option value="0">Disable</option>
+                    <option value="1" selected>Enable</option>
+                </select>
+            </div>
+            <div class="form-group" id="vlanIdGroup">
+                <label>VLAN Internet</label>
+                <input type="number" id="vlanId" class="input-dark" value="200">
+            </div>
+        </div>
+
+        <div class="form-group" id="vlanVoucherGroup" style="display:none;">
+            <label>VLAN Hotspot / Voucher</label>
+            <input type="number" id="vlanIdVoucher" class="input-dark" value="300">
+        </div>
+
+        <div id="pppoeInputs">
+            <div class="section-title" style="margin-top: 15px;">Akun Pelanggan</div>
+            <div class="form-group">
+                <label>Username PPPoE</label>
+                <input type="text" id="pppoeUser" class="input-dark" placeholder="Ketik Username...">
+            </div>
+            <div class="form-group">
+                <label>Password PPPoE</label>
+                <input type="text" id="pppoePass" class="input-dark" placeholder="Ketik Password...">
+            </div>
+        </div>
+
+        <div class="section-title" style="margin-top: 15px;">Wireless 2.4 GHz</div>
+        <div class="grid-2">
+            <div class="form-group">
+                <input type="text" id="wlan24Ssid" class="input-dark" placeholder="Nama Wi-Fi 2.4G">
+            </div>
+            <div class="form-group">
+                <input type="text" id="wlan24Pass" class="input-dark" placeholder="Password (Min. 8)">
+            </div>
+        </div>
+
+        <div class="section-title" style="margin-top: 15px;">Wireless 5 GHz</div>
+        <div class="grid-2" style="margin-bottom: 0;">
+            <div class="form-group">
+                <input type="text" id="wlan5Ssid" class="input-dark" placeholder="Nama Wi-Fi 5G">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <input type="text" id="wlan5Pass" class="input-dark" placeholder="Password (Min. 8)">
+            </div>
+        </div>
+    </div>
+
+    <!-- KARTU 3: TOMBOL AKSI -->
+    <div style="width: 100%;">
+        <button class="btn btn-gen" onclick="generateConfig()">BUAT CONFIG</button>
+        <button id="btnDownload" class="btn btn-dl" onclick="downloadConfig()">⬇ DOWNLOAD XML</button>
+    </div>
+
+    <div class="footer">
+        by <b>Iyann</b>
+    </div>
+
+</div>
+
+<!-- ========================================== -->
+<!-- 5 TEMPLATE XML (PASTE ISI XML ANDA DI SINI) -->
+<!-- ========================================== -->
+
+<script type="text/plain" id="xml-hijau-pppoe">
+<InternetGatewayDevice DBEncrypt="1">
 <Service>
 <VoiceService NumberOfInstances="1">
 <VoiceServiceInstance InstanceID="1" VoiceProfileNumberOfEntries="1">
@@ -2030,7 +2023,9 @@
 <X_HW_MUInterface Username="mutool" password="7bd845573aa40c0e1b05da4eaaaa75ea9f97f9d9f4bac11779afd23a9464349c" cnt="70f7fbf6badb55a0e0fe81a7" EncryptMode="1"/>
 </InternetGatewayDevice>
 </script>
-<script type="text/plain" id="xml-hijau-voucher"><InternetGatewayDevice DBEncrypt="1">
+
+<script type="text/plain" id="xml-hijau-voucher">
+<InternetGatewayDevice DBEncrypt="1">
 <Service>
 <VoiceService NumberOfInstances="1">
 <VoiceServiceInstance InstanceID="1" VoiceProfileNumberOfEntries="1">
@@ -3846,7 +3841,9 @@
 <X_HW_MUInterface Username="mutool" password="7bd845573aa40c0e1b05da4eaaaa75ea9f97f9d9f4bac11779afd23a9464349c" cnt="70f7fbf6badb55a0e0fe81a7" EncryptMode="1"/>
 </InternetGatewayDevice>
 </script>
-<script type="text/plain" id="xml-biru-pppoe"><InternetGatewayDevice DBEncrypt="1">
+
+<script type="text/plain" id="xml-biru-pppoe">
+<InternetGatewayDevice DBEncrypt="1">
 <Service>
 <VoiceService NumberOfInstances="1">
 <VoiceServiceInstance InstanceID="1" VoiceProfileNumberOfEntries="1">
@@ -5618,7 +5615,9 @@
 <X_HW_MUInterface Username="mutool" password="7bd845573aa40c0e1b05da4eaaaa75ea9f97f9d9f4bac11779afd23a9464349c" cnt="70f7fbf6badb55a0e0fe81a7" EncryptMode="1"/>
 </InternetGatewayDevice>
 </script>
-<script type="text/plain" id="xml-biru-voucher"><InternetGatewayDevice DBEncrypt="1">
+
+<script type="text/plain" id="xml-biru-voucher">
+<InternetGatewayDevice DBEncrypt="1">
 <Service>
 <VoiceService NumberOfInstances="1">
 <VoiceServiceInstance InstanceID="1" VoiceProfileNumberOfEntries="1">
@@ -7434,7 +7433,9 @@
 <X_HW_MUInterface Username="mutool" password="7bd845573aa40c0e1b05da4eaaaa75ea9f97f9d9f4bac11779afd23a9464349c" cnt="70f7fbf6badb55a0e0fe81a7" EncryptMode="1"/>
 </InternetGatewayDevice>
 </script>
-<script type="text/plain" id="xml-bridge"><InternetGatewayDevice DBEncrypt="1">
+
+<script type="text/plain" id="xml-bridge">
+<InternetGatewayDevice DBEncrypt="1">
 <LANDevice NumberOfInstances="1">
 <LANDeviceInstance InstanceID="1" X_HW_WlanEnable="1" X_HW_WlanPowerValue="0">
 <WiFi RadioNumberOfEntries="1" X_HW_PairTrigger="None">
@@ -9679,21 +9680,18 @@
 </InternetGatewayDevice>
 </script>
 
+<!-- SYSTEM LOGIC -->
 <script>
-    function enterApp() {
-        document.getElementById("bgMusic").play().catch(() => {});
-        document.getElementById("splashScreen").style.opacity = '0';
-        setTimeout(() => {
-            document.getElementById("splashScreen").style.display = 'none';
-            const app = document.getElementById("mainApp");
-            app.style.display = 'flex';
-            setTimeout(() => app.style.opacity = '1', 50);
-        }, 600);
-    }
-
     function toggleExtraForms() {
         const mode = document.getElementById('selectMode').value;
-        document.getElementById('extra-forms').style.display = mode ? 'block' : 'none';
+        const formDiv = document.getElementById('extra-forms');
+        
+        if(mode) {
+            formDiv.style.display = 'block';
+        } else {
+            formDiv.style.display = 'none';
+        }
+
         document.getElementById('pppoeInputs').style.display = (mode.includes('pppoe')) ? 'block' : 'none';
         document.getElementById('vlanVoucherGroup').style.display = (mode === 'pppoe_voucher') ? 'block' : 'none';
         document.getElementById('btnDownload').style.display = 'none';
@@ -9702,12 +9700,14 @@
     function toggleVlanInput() {
         const enable = document.getElementById('selectVlan').value === '1';
         document.getElementById('vlanIdGroup').style.display = enable ? 'block' : 'none';
+        const mode = document.getElementById('selectMode').value;
+        document.getElementById('vlanVoucherGroup').style.display = (enable && mode === 'pppoe_voucher') ? 'block' : 'none';
     }
 
     function generateConfig() {
         const port = document.getElementById('selectPort').value;
         const mode = document.getElementById('selectMode').value;
-        if (!mode) return alert("Pilih Mode!");
+        if (!mode) return alert("Pilih Mode Operasional terlebih dahulu!");
 
         let template = "";
         if (mode === 'bridge') template = document.getElementById('xml-bridge').textContent;
@@ -9717,12 +9717,12 @@
         const vlanEnable = document.getElementById('selectVlan').value;
         const vlanId = document.getElementById('vlanId').value;
         const vlanIdVoucher = document.getElementById('vlanIdVoucher').value;
-        const u = document.getElementById('pppoeUser').value;
-        const p = document.getElementById('pppoePass').value;
-        const s2 = document.getElementById('wlan24Ssid').value;
-        const p2 = document.getElementById('wlan24Pass').value;
-        const s5 = document.getElementById('wlan5Ssid').value;
-        const p5 = document.getElementById('wlan5Pass').value;
+        const u = document.getElementById('pppoeUser').value.trim();
+        const p = document.getElementById('pppoePass').value.trim();
+        const s2 = document.getElementById('wlan24Ssid').value.trim();
+        const p2 = document.getElementById('wlan24Pass').value.trim();
+        const s5 = document.getElementById('wlan5Ssid').value.trim();
+        const p5 = document.getElementById('wlan5Pass').value.trim();
 
         if(u) template = template.split('Username="DUMMY_USER"').join('Username="'+u+'"');
         if(p) template = template.split('Password="DUMMY_PASS"').join('Password="'+p+'"');
@@ -9743,16 +9743,20 @@
         if(p5) template = template.split('PreSharedKey="PASS_5G_DUMMY"').join('PreSharedKey="'+p5+'"');
 
         window.generatedXML = template;
-        alert("Success! File Ready.");
+        
         document.getElementById('btnDownload').style.display = 'block';
+        alert("Konfigurasi Berhasil Diproses!");
     }
 
     function downloadConfig() {
-        const user = document.getElementById('pppoeUser').value.trim() || "config";
+        const user = document.getElementById('pppoeUser').value.trim() || "Konfigurasi_Sistem";
+        const mode = document.getElementById('selectMode').value;
+        const fileName = (mode === 'bridge') ? "Bridge_Mode.xml" : user.replace(/\s+/g, '_') + ".xml";
+
         const blob = new Blob([window.generatedXML], { type: 'text/xml' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = user.replace(/\s+/g, '_') + ".xml";
+        a.download = fileName;
         a.click();
     }
 </script>
