@@ -98,7 +98,7 @@ function App() {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: {
-                        "Content-Type": "text/plain",
+                        "Content-Type": "application/json",
                     },
                     body: JSON.stringify({ citizens: citizens, transactions: transactions })
                 }).catch(e => console.log("Gagal mem-backup ke server."));
@@ -317,7 +317,7 @@ function App() {
             method: 'POST',
             mode: 'no-cors', // KUNCI PENEMBUS BLOKIR ANDROID
             headers: {
-                "Content-Type": "text/plain",
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({ citizens: citizens, transactions: transactions })
         })
