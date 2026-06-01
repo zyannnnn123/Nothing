@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="id">
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+    <title>RT. 58 RW. 18 MAHKOTA GRAHA</title> 
+    <script src="https://cdn.tailwindcss.com"></script> 
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script> 
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script> 
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 antialiased select-none"> 
+    <div id="root"></div>
+
+<script type="text/babel"> 
+
+// =========================================================================
+// URL SCRIPT GOOGLE SHEETS ANDA (SUDAH DIPASANG)
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjgSYjDzGQuHMq_E7zJ8wWeXGpFPNj15LFMgU0I1JkGB0Cpue93N2Dc7QLiRMVfZ7k/exec';
+// =========================================================================
+
+const { useState, useEffect, useMemo, useRef } = React;
+
+const DUES_AMOUNT = 30000; 
+
+const CATEGORIES = { 
+    kas_rt: { name: 'Kas RT', amount: 10000, color: 'bg-blue-50 text-blue-800 border-blue-200' }, 
+    kegiatan: { name: 'Kegiatan', amount: 4000, color: 'bg-yellow-50 text-yellow-800 border-yellow-200' }, 
+    posyandu: { name: 'Posyandu', amount: 2000, color: 'bg-purple-50 text-purple-800 border-purple-200' }, 
+    sosial: { name: 'Sosial', amount: 2000, color: 'bg-orange-50 text-orange-800 border-orange-200' }, 
+    kematian: { name: 'Kematian', amount: 2000, color: 'bg-red-50 text-red-800 border-red-200' }, 
+    sampah: { name: 'Sampah', amount: 10000, color: 'bg-emerald-50 text-emerald-800 border-emerald-200' }
+};
+
+const MONTH_NAMES = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+const AVAILABLE_YEARS = [2024, 2025, 2026, 2027, 2028, 2029, 2030];
+
+function App() { 
+    const [activeTab, setActiveTab] = useState('home'); 
+    const [activeMonth, setActiveMonth] = useState(new Date().getMonth()); 
+    const [activeYear, setActiveYear] = useState(new Date().getFullYear()); 
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterStatus, setFilterStatus] = useState('all');
+    
+    const [filterTransMonth, setFilterTransMonth] = useState(new Date().getMonth().toString());
+    const [filterTransYear, setFilterTransYear] = useState(new Date().getFullYear().toString());
+    const [filterType, setFilterType] = useState('all');
+    const [filterCategory, setFilterCategory] = useState('all');
+    const [filterMethod, setFilterMethod] = useState('all');
+    
+    const [citizens, setCitizens] = useState(() => JSON.parse(localStorage.getItem('rt_citizens')) || [{ id: 1, name: 'Agus Santoso', block: 'A-01' }]); 
+    const [transactions, setTransactions] = useState(() => JSON.parse(localStorage.getItem('rt_transactions')) || []); 
+    
+    const [showPayModal, setShowPayModal] = useState({ isOpen: false, citizen: null }); 
+    const [showTransModal, setShowTransModal] = useState(false); 
+    const [editTransData, setEditTransData] = useState(null); 
+    const fileInputRef = useRef(null);
+
+    // SISTEM SINKRONISASI 4 HP
+    const isInitialMount = useRef(true);
+    const isSyncing = useRef(false);
+
+    const fetchDataOtomatis = async () => {
+    if (!SCRIPT_URL) return;
+        try {
+            const res = await fetch(SCRIPT_URL);
+            const data = await res.json();
+            if (data && data.citizens && data.transactions) {
+                isSyncing.current = true; // Kunci sementara agar tidak bentrok
+                setCitizens(data.citizens);
+                setTransactions(data.transactions);
+                setTimeout(() => { isSyncing.current = false; }, 1000);
+            }
+        } catch (e) {
+            console.log("Menunggu jaringan internet untuk update...");
+        }
+    };
+
+    // Auto-update setiap 10 detik
+    useEffect(() => {
+        fetchDataOtomatis(); 
+        const interval = setInterval(fetchDataOtomatis, 10000);
+        return () => clearInterval(interval);
+    }, []);
+
+    // Menyimpan data otomatis setiap kali ada perubahan
+    // Menyimpan data otomatis setiap kali ada perubahan
+    useEffect(() => { 
+        localStorage.setItem('rt_citizens', JSON.stringify(citizens)); 
+        localStorage.setItem('rt_transactions', JSON.stringify(transactions)); 
+
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+        } else {
+            if (!isSyncing.current && SCRIPT_URL) {
+                // Background auto-save ke Google Sheets (Anti-CORS)
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        "Content-Type": "text/plain",
+                    },
+                    body: JSON.stringify({ citizens: citizens, transactions: transactions })
+                }).catch(e => console.log("Gagal mem-backup ke server."));
+            }
+        }
+    }, [citizens, transactions]);
+
+    const localToday = useMemo(() => {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    }, []);
+
+    const formatRupiah = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
+
+    const financialData = useMemo(() => { 
+        let cash = 0, qris = 0, income = 0, expense = 0; 
+        let allTimeIncome = 0, allTimeExpense = 0;
+        let catBalances = Object.keys(CATEGORIES).reduce((acc, k) => ({ ...acc, [k]: 0 }), {});
+
+        transactions.forEach(t => { 
+            const nom = parseInt(t.nominal) || 0; 
+            const d = new Date(t.date); 
+            const isCurrentMonth = d.getMonth() === activeMonth && d.getFullYear() === activeYear;
+
+            if (t.type === 'masuk') { 
+                allTimeIncome += nom;
+                if (t.method === 'tunai') cash += nom; else qris += nom; 
+                if (isCurrentMonth) income += nom; 
+                if (t.isDues) { 
+                    Object.keys(CATEGORIES).forEach(k => catBalances[k] += CATEGORIES[k].amount); 
+                } else if (t.category && catBalances[t.category] !== undefined) { 
+                    catBalances[t.category] += nom; 
+                } 
+            } else { 
+                allTimeExpense += nom;
+                if (t.method === 'tunai') cash -= nom; else qris -= nom; 
+                if (isCurrentMonth) expense += nom; 
+                if (t.category && catBalances[t.category] !== undefined) { 
+                    catBalances[t.category] -= nom; 
+                } 
+            } 
+        }); 
+        return { cash, qris, income, expense, allTimeIncome, allTimeExpense, catBalances, total: cash + qris }; 
+    }, [transactions, activeMonth, activeYear]);
+
+    const chartData = useMemo(() => {
+        const result = [];
+        for (let i = 3; i >= 0; i--) {
+            let m = activeMonth - i;
+            let y = activeYear;
+            if (m < 0) {
+                m += 12;
+                y -= 1;
+            }
+            
+            let income = 0;
+            let expense = 0;
+            transactions.forEach(t => {
+                const d = new Date(t.date);
+                if (d.getMonth() === m && d.getFullYear() === y) {
+                    if (t.type === 'masuk') income += parseInt(t.nominal) || 0;
+                    else expense += parseInt(t.nominal) || 0;
+                }
+            });
+            result.push({
+                label: `${MONTH_NAMES[m].substring(0, 3)} ${String(y).substring(2)}`,
+                income,
+                expense
+            });
+        }
+        return result;
+    }, [transactions, activeMonth, activeYear]);
+
+    const isPaid = (cId) => transactions.some(t => {
+        if (!t.isDues || t.citizenId !== cId) return false;
+        if (t.duesMonth !== undefined && t.duesYear !== undefined) {
+            return t.duesMonth === activeMonth && t.duesYear === activeYear;
+        }
+        return new Date(t.date).getMonth() === activeMonth && new Date(t.date).getFullYear() === activeYear;
+    });
+
+    const duesProgress = useMemo(() => {
+        const total = citizens.length;
+        const paid = citizens.filter(c => isPaid(c.id)).length;
+        const percent = total > 0 ? Math.round((paid / total) * 100) : 0;
+        return { total, paid, percent };
+    }, [citizens, transactions, activeMonth, activeYear]);
+
+    const handlePayDues = (method) => { 
+        const c = showPayModal.citizen; 
+        const newT = { 
+            id: Date.now(), 
+            ket: `Iuran ${MONTH_NAMES[activeMonth]} - ${c.name}`, 
+            nominal: DUES_AMOUNT, 
+            category: 'kas_rt', 
+            method, 
+            type: 'masuk', 
+            date: new Date().toISOString(), 
+            citizenId: c.id, 
+            isDues: true,
+            duesMonth: activeMonth, 
+            duesYear: activeYear    
+        }; 
+        setTransactions([newT, ...transactions]); 
+        setShowPayModal({ isOpen: false, citizen: null }); 
+    };
+
+    const handleSaveTransaction = (e) => { 
+        e.preventDefault(); 
+        const form = e.target; 
+        const [y, m, d] = form.date.value.split('-');
+        
+        const now = new Date();
+        const transactionDate = new Date(y, m - 1, d, now.getHours(), now.getMinutes(), now.getSeconds());
+
+        const newTData = { 
+            ket: form.ket.value, 
+            nominal: parseInt(form.nom.value), 
+            method: form.method.value, 
+            type: form.type.value, 
+            category: form.cat.value, 
+            date: transactionDate.toISOString(), 
+        }; 
+
+        if (editTransData) {
+            setTransactions(transactions.map(t => 
+                t.id === editTransData.id ? { ...t, ...newTData } : t
+            ));
+        } else {
+            setTransactions([{ id: Date.now(), isDues: false, ...newTData }, ...transactions]); 
+        }
+        
+        setShowTransModal(false); 
+        setEditTransData(null);
+    };
+
+    const handleEditCitizen = (citizen) => {
+        const newName = prompt("Ubah Nama Warga:", citizen.name);
+        if (newName === null) return; 
+        
+        const newBlock = prompt("Ubah Blok Rumah:", citizen.block);
+        if (newBlock === null) return; 
+
+        if (newName.trim() && newBlock.trim()) {
+            setCitizens(citizens.map(c => 
+                c.id === citizen.id ? { ...c, name: newName.trim(), block: newBlock.trim() } : c
+            ));
+            setTransactions(transactions.map(t => {
+                if (t.isDues && t.citizenId === citizen.id) {
+                    const monthPart = t.ket.split(' - ')[0];
+                    return { ...t, ket: `${monthPart} - ${newName.trim()}` };
+                }
+                return t;
+            }));
+        }
+    };
+
+    const handleDeleteCitizen = (id) => {
+        if(window.confirm("Apakah Anda yakin ingin menghapus data warga ini?")) {
+            setCitizens(citizens.filter(ct => ct.id !== id));
+        }
+    };
+
+    const handleDeleteTransaction = (id) => {
+        if(window.confirm("Apakah Anda yakin ingin menghapus riwayat transaksi ini?")) {
+            setTransactions(transactions.filter(tr => tr.id !== id));
+        }
+    };
+
+    const filteredCitizens = useMemo(() => {
+        return citizens.filter(c => {
+            const matchesSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                  c.block.toLowerCase().includes(searchTerm.toLowerCase());
+            
+            let matchesStatus = true;
+            if (filterStatus === 'lunas') {
+                matchesStatus = isPaid(c.id);
+            } else if (filterStatus === 'belum') {
+                matchesStatus = !isPaid(c.id);
+            }
+            
+            return matchesSearch && matchesStatus;
+        });
+    }, [citizens, searchTerm, filterStatus, transactions, activeMonth, activeYear]);
+
+    const filteredTransactions = useMemo(() => {
+        return transactions.filter(t => {
+            const tDate = new Date(t.date);
+            
+            const matchMonth = filterTransMonth === 'all' || tDate.getMonth() === parseInt(filterTransMonth);
+            const matchYear = filterTransYear === 'all' || tDate.getFullYear() === parseInt(filterTransYear);
+            const matchType = filterType === 'all' || t.type === filterType;
+            const matchMethod = filterMethod === 'all' || t.method === filterMethod;
+            
+            let currentCat = t.category;
+            if (t.isDues) {
+                const duesMethodCat = t.method === 'tunai' ? 'iuran_tunai' : 'iuran_qris';
+                return matchMonth && matchYear && matchType && matchMethod && (filterCategory === 'all' || duesMethodCat === filterCategory || currentCat === filterCategory);
+            }
+            return matchMonth && matchYear && matchType && matchMethod && (filterCategory === 'all' || currentCat === filterCategory);
+        });
+    }, [transactions, filterTransMonth, filterTransYear, filterType, filterCategory, filterMethod]);
+
+    const handleSaveBackup = () => {
+    if (!SCRIPT_URL) {
+        alert("URL Google Sheets belum dipasang!");
+        return;
+    }
+        
+        alert("Sedang menyinkronkan data ke Google Sheets...");
+        
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // KUNCI PENEMBUS BLOKIR ANDROID
+            headers: {
+                "Content-Type": "text/plain",
+            },
+            body: JSON.stringify({ citizens: citizens, transactions: transactions })
+        })
+        .then(() => {
+            // Karena no-cors, kita tidak menunggu balasan JSON. Langsung anggap sukses.
+            alert("Mantap! Data berhasil tersimpan dan sinkron dengan Google Sheets.");
+        })
+        .catch(e => {
+            alert("Gagal sinkron. Pastikan HP terkoneksi internet.");
+            console.log("Error:", e);
+        });
+    };
+
+    const handleLoadBackup = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            try {
+                const data = JSON.parse(evt.target.result);
+                if (data.citizens) setCitizens(data.citizens);
+                if (data.transactions) setTransactions(data.transactions);
+                alert("Semua data berhasil dimuat ulang!");
+            } catch (err) { alert("Gagal membaca file backup."); }
+        };
+        reader.readAsText(file);
+        e.target.value = ''; 
+    };
+
+    return ( 
+        <div className="max-w-md mx-auto h-screen flex flex-col bg-gray-50 shadow-xl border-x border-gray-200"> 
+            <header className="bg-blue-800 text-white p-3 shadow-md flex-none flex justify-between items-center sticky top-0 z-50"> 
+                <h1 className="text-xs font-bold tracking-wider truncate">RT. 58 RW. 18 MAHKOTA GRAHA</h1> 
+                <span className="text-[10px] bg-blue-700 px-2 py-0.5 rounded font-mono">{MONTH_NAMES[activeMonth].substring(0,3)} {activeYear}</span>
+            </header>
+
+            <main className="flex-1 p-2.5 pb-16 overflow-y-auto"> 
+                
+                {activeTab === 'home' && ( 
+                    <div className="flex flex-col space-y-1.5"> 
+                        <div className="grid grid-cols-2 gap-1.5 bg-white p-1 rounded-xl border shadow-sm">
+                            <div className="flex flex-col gap-0.5">
+                                <label className="text-[8px] font-bold text-gray-400 uppercase px-1">Pilih Bulan</label>
+                                <select value={activeMonth} onChange={(e) => setActiveMonth(parseInt(e.target.value))} className="text-[11px] p-1 border border-gray-100 rounded-lg bg-gray-50 font-bold text-gray-700">
+                                    {MONTH_NAMES.map((name, idx) => <option key={idx} value={idx}>{name}</option>)}
+                                </select>
+                            </div>
+                            <div className="flex flex-col gap-0.5">
+                                <label className="text-[8px] font-bold text-gray-400 uppercase px-1">Pilih Tahun</label>
+                                <select value={activeYear} onChange={(e) => setActiveYear(parseInt(e.target.value))} className="text-[11px] p-1 border border-gray-100 rounded-lg bg-gray-50 font-bold text-gray-700">
+                                    {AVAILABLE_YEARS.map(yr => <option key={yr} value={yr}>{yr}</option>)}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-blue-700 to-blue-900 p-3 rounded-xl text-white shadow-lg space-y-1.5"> 
+                            <div>
+                                <p className="text-blue-200 text-[9px] font-medium">Total Kas Keseluruhan</p> 
+                                <p className="text-xl font-bold tracking-tight">{formatRupiah(financialData.total)}</p> 
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-blue-600/30 text-[10px]"> 
+                                <div><p className="text-[8px] text-blue-300 uppercase tracking-wider">Tunai</p><p className="font-semibold truncate">{formatRupiah(financialData.cash)}</p></div> 
+                                <div><p className="text-[8px] text-blue-300 uppercase tracking-wider">QRIS</p><p className="font-semibold truncate">{formatRupiah(financialData.qris)}</p></div> 
+                            </div> 
+
+                            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-blue-600/30 text-[10px]"> 
+                                <div><p className="text-[8px] text-emerald-300 uppercase tracking-wider font-bold">Total Masuk (Semua)</p><p className="font-bold text-emerald-200 truncate">{formatRupiah(financialData.allTimeIncome)}</p></div> 
+                                <div><p className="text-[8px] text-rose-300 uppercase tracking-wider font-bold">Total Keluar (Semua)</p><p className="font-bold text-rose-200 truncate">{formatRupiah(financialData.allTimeExpense)}</p></div> 
+                            </div> 
+
+                            <div className="pt-1 border-t border-blue-600/30 space-y-1">
+                                <div className="text-[9px] text-blue-200 font-medium">📊 Partisipasi Iuran Warga</div>
+                                <div className="w-full bg-blue-950/40 rounded-full h-1 overflow-hidden">
+                                    <div className="bg-gradient-to-r from-teal-400 to-emerald-400 h-1 rounded-full" style={{ width: `${duesProgress.percent}%` }}></div>
+                                </div>
+                                <div className="flex justify-between items-center text-[9px] text-blue-200 pt-0.5">
+                                    <span>Sudah Bayar: <strong className="text-white">{duesProgress.paid}</strong> dari <strong className="text-white">{duesProgress.total} Warga</strong></span>
+                                    <span className="font-mono font-bold text-emerald-300 bg-blue-950/50 px-1 rounded text-[8px]">{duesProgress.percent}% Lunas</span>
+                                </div>
+                            </div>
+                        </div> 
+                        
+                        <div className="grid grid-cols-2 gap-1.5"> 
+                            <div className="bg-white p-1.5 rounded-xl border border-green-100 shadow-sm">
+                                <p className="text-[8px] text-green-600 font-bold uppercase tracking-wider">Pemasukan ({MONTH_NAMES[activeMonth].substring(0,3)})</p>
+                                <p className="text-[11px] font-bold text-green-700 mt-0.5">{formatRupiah(financialData.income)}</p>
+                            </div> 
+                            <div className="bg-white p-1.5 rounded-xl border border-red-100 shadow-sm">
+                                <p className="text-[8px] text-red-600 font-bold uppercase tracking-wider">Pengeluaran ({MONTH_NAMES[activeMonth].substring(0,3)})</p>
+                                <p className="text-[11px] font-bold text-red-700 mt-0.5">{formatRupiah(financialData.expense)}</p>
+                            </div> 
+                        </div> 
+
+                        <div className="bg-white p-2 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                            <div className="flex justify-between items-center text-[8px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                                <span>📈 Tren Kas 4 Bulan Terakhir</span>
+                            </div>
+                            <div className="flex justify-between items-end h-10 pt-1 px-1">
+                                {chartData.map((d, idx) => {
+                                    const maxVal = Math.max(...chartData.map(x => Math.max(x.income, x.expense)), 1);
+                                    const incHeight = (d.income / maxVal) * 100;
+                                    const expHeight = (d.expense / maxVal) * 100;
+                                    return (
+                                        <div key={idx} className="flex flex-col items-center flex-1">
+                                            <div className="flex items-end gap-1 h-7 w-full justify-center">
+                                                <div className="bg-emerald-500 w-1.5 rounded-t" style={{ height: `${Math.max(incHeight, 2)}%` }}></div>
+                                                <div className="bg-rose-500 w-1.5 rounded-t" style={{ height: `${Math.max(expHeight, 2)}%` }}></div>
+                                            </div>
+                                            <span className="text-[7px] text-gray-400 font-bold mt-0.5 font-mono uppercase">{d.label}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div className="grid grid-cols-2 gap-1"> 
+                                {Object.entries(CATEGORIES).map(([k, cat]) => ( 
+                                    <div key={k} className={`p-1 rounded-lg border ${cat.color} flex flex-col justify-between`}>
+                                        <p className="text-[8px] font-bold uppercase tracking-wide opacity-80">{cat.name}</p>
+                                        <p className="text-[10px] font-bold mt-0.5">{formatRupiah(financialData.catBalances[k] || 0)}</p>
+                                    </div> 
+                                ))} 
+                            </div> 
+                        </div>
+
+                        <div className="bg-white p-1.5 rounded-xl border border-gray-200 shadow-sm mt-0.5">
+                            <div className="grid grid-cols-2 gap-2">
+                                <button type="button" onClick={handleSaveBackup} className="p-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold text-[10px] shadow-sm">💾 Simpan Data (Sync)</button>
+                                <button type="button" onClick={() => fileInputRef.current.click()} className="p-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-bold text-[10px] shadow-sm">📂 Muat Data (.json)</button>
+                            </div>
+                            <input type="file" ref={fileInputRef} onChange={handleLoadBackup} className="hidden" accept=".json" />
+                        </div>
+                    </div> 
+                )}
+
+                {activeTab === 'warga' && ( 
+                    <div className="flex flex-col space-y-2"> 
+                        <div className="flex items-center gap-2 bg-white p-1 rounded-xl border shadow-sm"> 
+                            <button onClick={() => { setActiveMonth(activeMonth === 0 ? 11 : activeMonth - 1); if(activeMonth === 0) setActiveYear(activeYear - 1); }} className="p-1 hover:bg-gray-100 rounded-lg text-xs font-bold">&lt;</button> 
+                            <span className="font-bold text-xs flex-1 text-center text-gray-700">{MONTH_NAMES[activeMonth]} {activeYear}</span> 
+                            <button onClick={() => { setActiveMonth(activeMonth === 11 ? 0 : activeMonth + 1); if(activeMonth === 11) setActiveYear(activeYear + 1); }} className="p-1 hover:bg-gray-100 rounded-lg text-xs font-bold">&gt;</button> 
+                        </div> 
+                        <button onClick={() => { const name = prompt("Nama Warga"); const block = prompt("Blok"); if(name && block) setCitizens([...citizens, {id: Date.now(), name, block}]); }} className="w-full p-2 bg-blue-600 text-white rounded-xl font-bold text-xs shadow-sm hover:bg-blue-700">+ Tambah Warga Baru</button> 
+                        
+                        <div className="flex gap-2">
+                            <input 
+                                type="text" 
+                                placeholder="Cari nama/blok..." 
+                                value={searchTerm} 
+                                onChange={(e) => setSearchTerm(e.target.value)} 
+                                className="flex-1 text-xs p-2 border rounded-xl shadow-sm" 
+                            />
+                            <select 
+                                value={filterStatus} 
+                                onChange={(e) => setFilterStatus(e.target.value)} 
+                                className="w-1/3 text-xs p-2 border rounded-xl shadow-sm bg-white text-gray-700"
+                            >
+                                <option value="all">Semua</option>
+                                <option value="lunas">✅ Lunas</option>
+                                <option value="belum">⏳ Belum</option>
+                            </select>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            {filteredCitizens.map(c => ( 
+                                <div key={c.id} className="bg-white p-2 rounded-xl border shadow-sm flex justify-between items-center"> 
+                                    <div>
+                                        <p className="font-bold text-xs text-gray-800">{c.name}</p>
+                                        <p className="text-[9px] font-mono text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded mt-0.5 inline-block">{c.block}</p>
+                                    </div> 
+                                    <div className="flex gap-1 items-center"> 
+                                        <button onClick={() => handleEditCitizen(c)} className="text-blue-600 text-[10px] px-1">Edit</button> 
+                                        <button onClick={() => handleDeleteCitizen(c.id)} className="text-red-500 text-[10px] px-1">Hapus</button> 
+                                        {isPaid(c.id) ? <span className="text-[9px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">Lunas</span> : <button onClick={() => setShowPayModal({ isOpen: true, citizen: c })} className="text-[9px] bg-blue-600 text-white px-2 py-0.5 rounded font-bold">Bayar</button>} 
+                                    </div> 
+                                </div> 
+                            ))}
+                        </div>
+                    </div> 
+                )}
+
+                {activeTab === 'kas' && ( 
+                    <div className="flex flex-col space-y-2"> 
+                        <button onClick={() => { setEditTransData(null); setShowTransModal(true); }} className="w-full bg-blue-800 text-white p-2 rounded-xl font-bold text-xs shadow-md">+ Transaksi Baru</button> 
+                        
+                        <div className="flex flex-col gap-1.5 bg-white p-1.5 rounded-xl border shadow-sm">
+                            <div className="grid grid-cols-2 gap-1.5">
+                                <select value={filterTransMonth} onChange={(e) => setFilterTransMonth(e.target.value)} className="text-[10px] p-1 border rounded-lg bg-gray-50 truncate font-medium text-gray-700">
+                                    <option value="all">📅 Semua Bulan</option>
+                                    {MONTH_NAMES.map((name, idx) => <option key={idx} value={idx}>{name}</option>)}
+                                </select>
+                                <select value={filterTransYear} onChange={(e) => setFilterTransYear(e.target.value)} className="text-[10px] p-1 border rounded-lg bg-gray-50 truncate font-medium text-gray-700">
+                                    <option value="all">🗓️ Semua Tahun</option>
+                                    {AVAILABLE_YEARS.map(yr => <option key={yr} value={yr}>{yr}</option>)}
+                                </select>
+                            </div>
+                            <div className="grid grid-cols-3 gap-1.5">
+                                <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="text-[10px] p-1 border rounded-lg bg-gray-50 truncate font-medium text-gray-700">
+                                    <option value="all">🔄 Tipe</option>
+                                    <option value="masuk">➕ Masuk</option>
+                                    <option value="keluar">➖ Keluar</option>
+                                </select>
+                                <select value={filterMethod} onChange={(e) => setFilterMethod(e.target.value)} className="text-[10px] p-1 border rounded-lg bg-gray-50 truncate font-medium text-gray-700">
+                                    <option value="all">💳 Metode</option>
+                                    <option value="tunai">💵 Tunai</option>
+                                    <option value="qris">📱 QRIS</option>
+                                </select>
+                                <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="text-[10px] p-1 border rounded-lg bg-gray-50 truncate font-medium text-gray-700">
+                                    <option value="all">📂 Kategori</option>
+                                    {Object.entries(CATEGORIES).map(([k,v]) => <option key={k} value={k}>{v.name}</option>)}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="bg-blue-50 p-2 rounded-xl border border-blue-100 shadow-sm flex justify-between items-center text-[10px]">
+                            <span className="font-bold text-blue-800">{filteredTransactions.length} Transaksi</span>
+                            <div className="flex gap-2">
+                                <span className="text-green-600 font-bold">+{formatRupiah(filteredTransactions.filter(t => t.type === 'masuk').reduce((sum, t) => sum + (parseInt(t.nominal)||0), 0))}</span>
+                                <span className="text-red-600 font-bold">-{formatRupiah(filteredTransactions.filter(t => t.type === 'keluar').reduce((sum, t) => sum + (parseInt(t.nominal)||0), 0))}</span>
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            {filteredTransactions.map(t => ( 
+                                <div key={t.id} className="bg-white p-2 rounded-xl border shadow-sm flex justify-between items-center"> 
+                                    <div>
+                                        <p className="font-bold text-xs text-gray-800">{t.ket}</p>
+                                        <div className="flex items-center gap-1 mt-0.5">
+                                            <p className="text-[9px] text-gray-400">{t.date.split('T')[0]}</p>
+                                            <span className="text-[8px] font-mono px-1 bg-gray-100 text-gray-500 rounded">{t.method.toUpperCase()}</span>
+                                        </div>
+                                    </div> 
+                                    <div className="flex items-center gap-2"> 
+                                        <p className={`font-bold text-xs ${t.type === 'masuk' ? 'text-green-600' : 'text-red-600'}`}>{t.type === 'masuk' ? '+' : '-'}{formatRupiah(t.nominal)}</p> 
+                                        
+                                        <div className="flex gap-1 border-l border-gray-200 pl-2 ml-1">
+                                            <button onClick={() => { setEditTransData(t); setShowTransModal(true); }} className="text-blue-500 text-xs hover:text-blue-700" title="Edit">✎</button> 
+                                            <button onClick={() => handleDeleteTransaction(t.id)} className="text-red-400 text-xs hover:text-red-600" title="Hapus">✕</button> 
+                                        </div>
+                                    </div> 
+                                </div> 
+                            ))}
+                            {filteredTransactions.length === 0 && (
+                                <p className="text-center text-xs text-gray-400 pt-4">Tidak ada riwayat transaksi</p>
+                            )}
+                        </div>
+                    </div> 
+                )} 
+            </main>
+
+            <nav className="flex-none bg-white border-t border-gray-200 flex justify-around p-2"> 
+                <button onClick={() => setActiveTab('home')} className={`text-xs ${activeTab === 'home' ? 'font-bold text-blue-800' : 'text-gray-400'}`}>Beranda</button> 
+                <button onClick={() => setActiveTab('warga')} className={`text-xs ${activeTab === 'warga' ? 'font-bold text-blue-800' : 'text-gray-400'}`}>Data Warga</button> 
+                <button onClick={() => setActiveTab('kas')} className={`text-xs ${activeTab === 'kas' ? 'font-bold text-blue-800' : 'text-gray-400'}`}>Kas RT</button> 
+            </nav> 
+
+            {showPayModal.isOpen && ( 
+                <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4"> 
+                    <div className="bg-white p-5 rounded-2xl w-full max-w-sm"> 
+                        <h3 className="font-bold text-sm mb-4">Pilih Metode Pembayaran</h3>
+                        <div className="grid grid-cols-2 gap-3"> 
+                            <button onClick={() => handlePayDues('tunai')} className="p-4 bg-orange-100 hover:bg-orange-200 rounded-xl font-bold text-sm transition">Tunai</button> 
+                            <button onClick={() => handlePayDues('qris')} className="p-4 bg-blue-100 hover:bg-blue-200 rounded-xl font-bold text-sm transition">QRIS</button> 
+                        </div> 
+                        <button onClick={() => setShowPayModal({ isOpen: false, citizen: null })} className="w-full mt-4 text-gray-400 text-xs hover:text-gray-600">Batal</button> 
+                    </div> 
+                </div> 
+            )}
+
+            {showTransModal && ( 
+                <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4"> 
+                    <form key={editTransData ? editTransData.id : 'new'} onSubmit={handleSaveTransaction} className="bg-white p-5 rounded-2xl w-full max-w-sm space-y-3"> 
+                        <h3 className="font-bold text-sm">{editTransData ? 'Edit Transaksi' : 'Transaksi Baru'}</h3> 
+                        
+                        <input name="ket" defaultValue={editTransData?.ket || ''} placeholder="Keterangan" className="w-full text-xs p-2 border rounded-xl bg-gray-50 focus:bg-white" required /> 
+                        <input name="nom" type="number" defaultValue={editTransData?.nominal || ''} placeholder="Nominal" className="w-full text-xs p-2 border rounded-xl bg-gray-50 focus:bg-white" required /> 
+                        <input name="date" type="date" defaultValue={editTransData ? editTransData.date.split('T')[0] : localToday} className="w-full text-xs p-2 border rounded-xl bg-gray-50 focus:bg-white" required />
+                        
+                        <div className="grid grid-cols-2 gap-2">
+                            <select name="type" defaultValue={editTransData?.type || 'masuk'} className="w-full text-xs p-2 border rounded-xl bg-gray-50">
+                                <option value="masuk">Pemasukan</option>
+                                <option value="keluar">Pengeluaran</option>
+                            </select> 
+                            <select name="method" defaultValue={editTransData?.method || 'tunai'} className="w-full text-xs p-2 border rounded-xl bg-gray-50">
+                                <option value="tunai">Tunai</option>
+                                <option value="qris">QRIS</option>
+                            </select> 
+                        </div>
+                        <select name="cat" defaultValue={editTransData?.category || 'kas_rt'} className="w-full text-xs p-2 border rounded-xl bg-gray-50">
+                            {Object.entries(CATEGORIES).map(([k,v]) => <option key={k} value={k}>{v.name}</option>)}
+                        </select> 
+                        
+                        <div className="flex gap-2">
+                            <button type="button" onClick={() => { setShowTransModal(false); setEditTransData(null); }} className="flex-1 border border-gray-300 text-gray-500 p-2 rounded-xl text-xs hover:bg-gray-50">Batal</button> 
+                            <button type="submit" className="flex-1 bg-blue-800 text-white p-2 rounded-xl text-xs font-bold hover:bg-blue-900">Simpan</button> 
+                        </div>
+                    </form> 
+                </div> 
+            )}
+        </div> 
+    ); 
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script> 
+</body>
+</html>
