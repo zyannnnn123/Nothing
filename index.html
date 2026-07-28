@@ -197,6 +197,30 @@ select.input-dark option {
             </div>
         </div>
 
+        <div class="form-group" id="vlanLocationPppoeGroup" style="display:none;">
+            <label>Pilih Lokasi (VLAN Internet)</label>
+            <select id="vlanLocationPppoe" class="input-dark" onchange="applyVlanLocationPppoe()">
+                <option value="" selected disabled>-- Pilih Lokasi --</option>
+                <option value="200">Sukamelang - 200</option>
+                <option value="89">Panglejar - 89</option>
+                <option value="200">Cibarola - 200</option>
+                <option value="21">Cibarola - 21</option>
+                <option value="11">Flamboyan - 11</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="vlanLocationVoucherGroup" style="display:none;">
+            <label>Pilih Lokasi (VLAN Internet & Hotspot)</label>
+            <select id="vlanLocationVoucher" class="input-dark" onchange="applyVlanLocationVoucher()">
+                <option value="" selected disabled>-- Pilih Lokasi --</option>
+                <option value="200|115">Sukamelang - 200 dan Hotspot 115</option>
+                <option value="89|21">Panglejar - 89 dan Hotspot 21</option>
+                <option value="200|11">Cibarola - 200 dan Hotspot 11</option>
+                <option value="21|11">Cibarola - 21 dan Hotspot 11</option>
+                <option value="11|21">Flamboyan - 11 dan Hotspot 21</option>
+            </select>
+        </div>
+
         <div class="form-group" id="vlanVoucherGroup" style="display:none;">
             <label>VLAN Hotspot / Voucher</label>
             <input type="number" id="vlanIdVoucher" class="input-dark" value="300">
@@ -210,7 +234,7 @@ select.input-dark option {
             </div>
             <div class="form-group">
                 <label>Password PPPoE</label>
-                <input type="text" id="pppoePass" class="input-dark" placeholder="Ketik Password...">
+                <input type="text" id="pppoePass" class="input-dark" value="21" readonly>
             </div>
         </div>
 
@@ -6917,7 +6941,7 @@ select.input-dark option {
 <STAWMMParameterInstance InstanceID="4" AIFSN="2" ECWMin="2" ECWMax="3" TXOP="47" AckPolicy="0"/>
 </STAWMMParameter>
 </WLANConfigurationInstance>
-<WLANConfigurationInstance InstanceID="2" Enable="1" RegulatoryDomain="ID" X_HW_Standard="11bgn" TransmitPower="100" Channel="0" AutoChannelEnable="1" X_HW_HT20="1" SSID="PMY.id" SSIDAdvertisementEnabled="1" MaxBitRate="auto" WMMEnable="1" BeaconType="Basic" BasicEncryptionModes="None" BasicAuthenticationMode="None" WPAEncryptionModes="TKIPEncryption" WPAAuthenticationMode="PSKAuthentication" IEEE11iEncryptionModes="AESEncryption" IEEE11iAuthenticationMode="PSKAuthentication" X_HW_WPAand11iEncryptionModes="TKIPandAESEncryption" X_HW_WPAand11iAuthenticationMode="PSKAuthentication" X_HW_WAPIEncryptionModes="SMS4" X_HW_WAPIAuthenticationMode="WAPIPSK" X_HW_WAPIServer="192.168.100.200" X_HW_WAPIPort="3810" WEPKeyIndex="1" WEPEncryptionLevel="104-bit" X_HW_RadiuServer="192.168.0.100" X_HW_RadiusPort="1812" X_HW_RadiusKey="$2$putH,c!%Z%#H]DuZI$={4}$&apos;.1JOPi$%r(&amp;&quot;Y7&apos;$" X_HW_GroupRekey="3600" X_HW_AssociateNum="32" X_HW_Powerlevel="1" X_HW_WPSKeyWord="128" X_HW_APModuleEnable="1" X_HW_ServiceEnable="1" X_HW_RetryTimeout="20" X_HW_Mode="0" X_HW_VLAN="" MACAddressControlEnabled="0" KeyPassphrase="" BasicDataTransmitRates="1,2,5.5,6,11,12,18,24,36,48,54" OperationalDataTransmitRates="1,2,5.5,11,6,9" InsecureOOBAccessEnabled="0" BeaconAdvertisementEnabled="0" RadioEnabled="1" AutoRateFallBackEnabled="1" LocationDescription="" DeviceOperationMode="InfrastructureAccessPoint" DistanceFromRoot="0" PeerBSSID="" AuthenticationServiceMode="None" UAPSDEnable="0" LowerLayers="InternetGatewayDevice.LANDevice.1.WiFi.Radio.1" Name="ath1" X_HW_PowerValue="39" Standard="11ng" TotalBytesSent="0" TotalBytesReceived="0" TotalPacketsSent="0" TotalPacketsReceived="0" BSSID="" TransmitPowerSupported="20,40,60,80,100" WMMSupported="1" TotalAssociations="0" Status="" PossibleChannels="" PossibleDataTransmitRates="1,2,5.5,11,6,9" TotalPSKFailures="0" TotalIntegrityFailures="0" UAPSDSupported="1" ChannelsInUse="6" X_HW_RFBand="2.4GHz" X_HW_Channel="6" X_HW_GuardInterval="Auto" X_HW_WebVisibility="1" X_HW_Band="2.4GHz" X_HW_AutoRateFallBackEnabled="1" X_HW_Dual_bandsupport="1" X_HW_LoopStatus="0" X_HW_WorkMode="0" X_HW_MCS="-1" X_IEEE80211wEnabled="0" X_TxBFEnabled="0" X_OCCACEnables="1" AccessEquipmentMac="" X_HW_RetryLevel="3" X_HW_RSSIThresholdEnable="1" X_HW_RSSIThreshold="-88" X_HW_EtherTypeFilter="" Reset="0" ModesSupported="" ModeEnabled="" SecondaryRadiusServerIPAddr="192.168.0.100" SecondaryRadiusServerPort="1812" SecondaryRadiusSecret="$2,p|0-R{R$RDg1|&amp;RsS,0QK8W&amp;E9]dKd/6^W&lt;}A~K$" SSIDAlias="cpe-ssid" LastChange="" SSIDStatus="Up" AccessPointStatus="Enabled" AccessPointAlias="cpe-ssid" SSIDReference="" IsolationEnable="0" X_HW_WPSConfigurated="2" SSIDLowerLayers="Device.WiFi.Radio.1" SSID_Backup="WirelessNet" X_HW_SupportedStandards="b,g,n" ChannelPlus="0" X_HW_AutoChannelScope="1,6,11" X_SCSEnables="1" X_HW_AutoChannelPeriodically="1" X_HW_DisableMCS="0" X_HW_CanUsedForCover="1" X_HW_UsedForCover="0" X_HW_OriginalSSID="WirelessNet" X_HW_OriginalPassword="" X_HW_OriginalSecurityProfile="" X_HW_JointSSIDIndex="0" AllowedMACAddress="" X_HW_WifiWorkingMode="0" X_TxBFImplicit="0" X_QHOPEnables="1" X_HW_NSSNum="1" X_HW_CurrentOperatingChannelBandwidth="" X_HW_SupportedChannelBandwidths="" X_HW_OperatingChannelBandwidth="20MHz">
+<WLANConfigurationInstance InstanceID="2" Enable="1" RegulatoryDomain="ID" X_HW_Standard="11bgn" TransmitPower="100" Channel="0" AutoChannelEnable="1" X_HW_HT20="1" SSID="PMY id" SSIDAdvertisementEnabled="1" MaxBitRate="auto" WMMEnable="1" BeaconType="Basic" BasicEncryptionModes="None" BasicAuthenticationMode="None" WPAEncryptionModes="TKIPEncryption" WPAAuthenticationMode="PSKAuthentication" IEEE11iEncryptionModes="AESEncryption" IEEE11iAuthenticationMode="PSKAuthentication" X_HW_WPAand11iEncryptionModes="TKIPandAESEncryption" X_HW_WPAand11iAuthenticationMode="PSKAuthentication" X_HW_WAPIEncryptionModes="SMS4" X_HW_WAPIAuthenticationMode="WAPIPSK" X_HW_WAPIServer="192.168.100.200" X_HW_WAPIPort="3810" WEPKeyIndex="1" WEPEncryptionLevel="104-bit" X_HW_RadiuServer="192.168.0.100" X_HW_RadiusPort="1812" X_HW_RadiusKey="$2$putH,c!%Z%#H]DuZI$={4}$&apos;.1JOPi$%r(&amp;&quot;Y7&apos;$" X_HW_GroupRekey="3600" X_HW_AssociateNum="32" X_HW_Powerlevel="1" X_HW_WPSKeyWord="128" X_HW_APModuleEnable="1" X_HW_ServiceEnable="1" X_HW_RetryTimeout="20" X_HW_Mode="0" X_HW_VLAN="" MACAddressControlEnabled="0" KeyPassphrase="" BasicDataTransmitRates="1,2,5.5,6,11,12,18,24,36,48,54" OperationalDataTransmitRates="1,2,5.5,11,6,9" InsecureOOBAccessEnabled="0" BeaconAdvertisementEnabled="0" RadioEnabled="1" AutoRateFallBackEnabled="1" LocationDescription="" DeviceOperationMode="InfrastructureAccessPoint" DistanceFromRoot="0" PeerBSSID="" AuthenticationServiceMode="None" UAPSDEnable="0" LowerLayers="InternetGatewayDevice.LANDevice.1.WiFi.Radio.1" Name="ath1" X_HW_PowerValue="39" Standard="11ng" TotalBytesSent="0" TotalBytesReceived="0" TotalPacketsSent="0" TotalPacketsReceived="0" BSSID="" TransmitPowerSupported="20,40,60,80,100" WMMSupported="1" TotalAssociations="0" Status="" PossibleChannels="" PossibleDataTransmitRates="1,2,5.5,11,6,9" TotalPSKFailures="0" TotalIntegrityFailures="0" UAPSDSupported="1" ChannelsInUse="6" X_HW_RFBand="2.4GHz" X_HW_Channel="6" X_HW_GuardInterval="Auto" X_HW_WebVisibility="1" X_HW_Band="2.4GHz" X_HW_AutoRateFallBackEnabled="1" X_HW_Dual_bandsupport="1" X_HW_LoopStatus="0" X_HW_WorkMode="0" X_HW_MCS="-1" X_IEEE80211wEnabled="0" X_TxBFEnabled="0" X_OCCACEnables="1" AccessEquipmentMac="" X_HW_RetryLevel="3" X_HW_RSSIThresholdEnable="1" X_HW_RSSIThreshold="-88" X_HW_EtherTypeFilter="" Reset="0" ModesSupported="" ModeEnabled="" SecondaryRadiusServerIPAddr="192.168.0.100" SecondaryRadiusServerPort="1812" SecondaryRadiusSecret="$2,p|0-R{R$RDg1|&amp;RsS,0QK8W&amp;E9]dKd/6^W&lt;}A~K$" SSIDAlias="cpe-ssid" LastChange="" SSIDStatus="Up" AccessPointStatus="Enabled" AccessPointAlias="cpe-ssid" SSIDReference="" IsolationEnable="0" X_HW_WPSConfigurated="2" SSIDLowerLayers="Device.WiFi.Radio.1" SSID_Backup="WirelessNet" X_HW_SupportedStandards="b,g,n" ChannelPlus="0" X_HW_AutoChannelScope="1,6,11" X_SCSEnables="1" X_HW_AutoChannelPeriodically="1" X_HW_DisableMCS="0" X_HW_CanUsedForCover="1" X_HW_UsedForCover="0" X_HW_OriginalSSID="WirelessNet" X_HW_OriginalPassword="" X_HW_OriginalSecurityProfile="" X_HW_JointSSIDIndex="0" AllowedMACAddress="" X_HW_WifiWorkingMode="0" X_TxBFImplicit="0" X_QHOPEnables="1" X_HW_NSSNum="1" X_HW_CurrentOperatingChannelBandwidth="" X_HW_SupportedChannelBandwidths="" X_HW_OperatingChannelBandwidth="20MHz">
 <Stats ErrorsSent="0" ErrorsReceived="0" DiscardPacketsSent="0" DiscardPacketsReceived="0" UnicastPacketsSent="0" UnicastPacketsReceived="0" MulticastPacketsSent="0" MulticastPacketsReceived="0" BroadcastPacketsSent="0" BroadcastPacketsReceived="0" UnknownProtoPacketsReceived="0" RetransCount="0" FailedRetransCount="0" RetryCount="0" MultipleRetryCount="0" ACKFailureCount="0" AggregatedPacketCount="0"/>
 <WPS X_HW_ConfigMethod="Lable" DevicePassword="$2LSj$4p)NaI|V4K&amp;&lt;wePY(CSHBAFwG+I%.33,W0.L$" X_HW_PinGenerator="AP" Enable="0" ConfigMethodsEnabled="Lable" SetupLock="0" X_HW_WPSRegistrationState="Stop" X_HW_TimeOut="120" ConfigMethodsSupported="PushButton Lable" DeviceName="HG8145V5" UUID="13814000-1dd2-11b2-a29f-2841eca4ac60" Version="16" SetupLockedState="Unlocked" ConfigurationState="Configured" LastConfigurationError="NoError" RegistrarNumberOfEntries="0" RegistrarEstablished="0" WPSConfigMethodsEnabled="PIN" WPSConfigMethodsSupported="PushButton,PIN" X_HW_APPinEnable="0" X_TTG_PBC="0" X_HW_APPINTIMEOUT="0" X_HW_WPSSTATUS=""/>
 <X_HW_AdvanceConf DtimPeriod="1" BeaconPeriod="100" RTSThreshold="2346" FragThreshold="2346"/>
@@ -9693,15 +9717,45 @@ select.input-dark option {
         }
 
         document.getElementById('pppoeInputs').style.display = (mode.includes('pppoe')) ? 'block' : 'none';
-        document.getElementById('vlanVoucherGroup').style.display = (mode === 'pppoe_voucher') ? 'block' : 'none';
         document.getElementById('btnDownload').style.display = 'none';
+
+        toggleVlanInput();
     }
 
     function toggleVlanInput() {
         const enable = document.getElementById('selectVlan').value === '1';
-        document.getElementById('vlanIdGroup').style.display = enable ? 'block' : 'none';
         const mode = document.getElementById('selectMode').value;
-        document.getElementById('vlanVoucherGroup').style.display = (enable && mode === 'pppoe_voucher') ? 'block' : 'none';
+
+        const useLocationPppoe = enable && mode === 'pppoe';
+        const useLocationVoucher = enable && mode === 'pppoe_voucher';
+
+        // Input manual VLAN Internet hanya untuk mode selain PPPoE / PPPoE+Voucher (mis. Bridge)
+        document.getElementById('vlanIdGroup').style.display = (enable && !useLocationPppoe && !useLocationVoucher) ? 'block' : 'none';
+
+        // Dropdown lokasi untuk mode PPPoE (otomatis isi VLAN Internet)
+        document.getElementById('vlanLocationPppoeGroup').style.display = useLocationPppoe ? 'block' : 'none';
+
+        // Dropdown lokasi untuk mode PPPoE + Voucher (otomatis isi VLAN Internet & Hotspot)
+        document.getElementById('vlanLocationVoucherGroup').style.display = useLocationVoucher ? 'block' : 'none';
+
+        // Input manual VLAN Hotspot/Voucher sudah digantikan dropdown lokasi di atas
+        document.getElementById('vlanVoucherGroup').style.display = 'none';
+    }
+
+    function applyVlanLocationPppoe() {
+        const sel = document.getElementById('vlanLocationPppoe');
+        if (sel.value) {
+            document.getElementById('vlanId').value = sel.value;
+        }
+    }
+
+    function applyVlanLocationVoucher() {
+        const sel = document.getElementById('vlanLocationVoucher');
+        if (sel.value) {
+            const parts = sel.value.split('|');
+            document.getElementById('vlanId').value = parts[0];
+            document.getElementById('vlanIdVoucher').value = parts[1];
+        }
     }
 
     function generateConfig() {
@@ -9715,6 +9769,14 @@ select.input-dark option {
         else template = (mode === 'pppoe_voucher') ? document.getElementById('xml-biru-voucher').textContent : document.getElementById('xml-biru-pppoe').textContent;
 
         const vlanEnable = document.getElementById('selectVlan').value;
+        if (vlanEnable === '1' && mode === 'pppoe' && !document.getElementById('vlanLocationPppoe').value) {
+            alert("Pilih Lokasi VLAN terlebih dahulu!");
+            return;
+        }
+        if (vlanEnable === '1' && mode === 'pppoe_voucher' && !document.getElementById('vlanLocationVoucher').value) {
+            alert("Pilih Lokasi VLAN terlebih dahulu!");
+            return;
+        }
         const vlanId = document.getElementById('vlanId').value;
         const vlanIdVoucher = document.getElementById('vlanIdVoucher').value;
         const u = document.getElementById('pppoeUser').value.trim();
@@ -9723,6 +9785,11 @@ select.input-dark option {
         const p2 = document.getElementById('wlan24Pass').value.trim();
         const s5 = document.getElementById('wlan5Ssid').value.trim();
         const p5 = document.getElementById('wlan5Pass').value.trim();
+
+        if ((p2 && p2.length < 8) || (p5 && p5.length < 8)) {
+            alert("Password minimal harus 8 karakter!");
+            return;
+        }
 
         if(u) template = template.split('Username="DUMMY_USER"').join('Username="'+u+'"');
         if(p) template = template.split('Password="DUMMY_PASS"').join('Password="'+p+'"');
